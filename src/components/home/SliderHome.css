@@ -1,0 +1,15 @@
+.slider-container {
+    width: 100%;
+    max-width: 1300px; /* Giới hạn chiều rộng tối đa là 900px */
+    margin: 0 auto; /* Căn giữa slider */
+    padding: 20px; /* Thêm khoảng cách xung quanh slider */
+  }
+  
+  .slider-image {
+    width: 1300px; /* Chiều rộng của hình ảnh là 900px */
+    height: 200px; /* Chiều cao của hình ảnh là 200px */
+    border-radius: 30px; /* Bo tròn góc hình ảnh */
+    object-fit: cover; /* Đảm bảo hình ảnh không bị biến dạng */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ nhẹ */
+  }
+  

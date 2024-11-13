@@ -1,0 +1,99 @@
+.lichKhamContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+}
+
+.lichKhamTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 40px 0;
+}
+
+.lichKhamTable th,
+.lichKhamTable td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.lichKhamTable th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.lichKhamTable tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.lichKhamTable tr:hover {
+  background-color: #ddd;
+}
+
+.loading,
+.error,
+.noData {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.description {
+  width: 20%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.noData {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.title {
+  display: flex;
+  flex-direction: column; /* Căn giữa theo chiều dọc */
+  align-items: center; /* Căn giữa theo chiều ngang */
+  text-align: center; /* Căn giữa văn bản */
+  margin-bottom: 20px; /* Thêm khoảng cách dưới tiêu đề */
+}
+
+.noDataImage {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+.appointmenImage
+{
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+.Filter {
+  background: none; /* Không có nền */
+  border: none; /* Không có viền */
+  cursor: pointer; /* Con trỏ chuột dạng tay khi hover */
+  padding: 0; /* Không có padding */
+}
+
+.Filter_Image {
+  margin-left: -40px;
+  margin-bottom: 5px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle; /* Căn giữa theo chiều dọc */
+  margin-right: 5px; /* Khoảng cách giữa hình ảnh và văn bản */
+}
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Chiếm toàn bộ chiều cao của viewport */
+}

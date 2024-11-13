@@ -1,0 +1,480 @@
+.containerHeader {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 50px;
+  padding-right: 50px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 9999999;
+}
+
+.logoHeader {
+  height: auto;
+  width: auto;
+}
+
+.logo1 {
+  height: 80px;
+  width: 200px;
+}
+
+.menuHeader {
+  padding-top: 20px;
+  border-bottom: 1px solid black;
+}
+
+.menuLi {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  font-size: 20px;
+
+}
+
+.menuLi li a {
+  text-decoration: none;
+  /* Tắt gạch chân */
+  color: #45a049;
+  /* Màu văn bản mặc định */
+  font-family: 'Roboto', sans-serif;
+  /* Chọn font chữ đẹp và hiện đại */
+  font-size: 20px;
+  /* Kích thước chữ */
+  font-weight: 500;
+  /* Trọng lượng chữ, có thể là 300, 400, 500, 700, v.v. */
+  letter-spacing: 0.5px;
+  /* Khoảng cách giữa các ký tự */
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  /* Hiệu ứng chuyển màu và bóng chữ */
+}
+
+.menuLi li a:hover {
+  color: #ff0000;
+  /* Màu chữ khi hover */
+  text-shadow: 0 2px 4px rgb(255, 255, 255);
+  /* Hiệu ứng bóng chữ */
+  text-decoration: none;
+  /* Gạch chân khi hover */
+}
+
+.menuLi li a:active {
+  color: #2c6b2f;
+  /* Màu chữ khi nhấn */
+}
+
+.LoginLink {
+  padding-top: 20px;
+  width: 284px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+}
+
+.LoginButton {
+  color: #ffffff;
+  text-decoration: none;
+  margin-top: 15px;
+  width: 150px;
+  height: 40px;
+  background: #4CAF50;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 40px;
+  transition: background-color 0.3s ease;
+
+}
+
+.LoginButton:hover {
+  color: #ffffff;
+  background: rgb(251, 44, 123);
+}
+
+.logoutButton {
+  color: #ffffff;
+  text-decoration: none;
+  margin: 35px 67px 0;
+  width: 150px;
+  height: 40px;
+  background: #4CAF50;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 40px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  color: #ffffff;
+  background: rgb(251, 44, 123);
+}
+
+.userContainer {
+  display: flex;
+  align-items: center;
+
+}
+
+.avatarContainer {
+  position: relative;
+  margin-left: 20px;
+  /* Khoảng cách giữa tên người dùng và ảnh đại diện */
+
+}
+
+.avatar {
+  width: 40px;
+  /* Kích thước ảnh đại diện */
+  height: 40px;
+  /* Kích thước ảnh đại diện */
+  border-radius: 50%;
+  /* Biến ảnh thành hình tròn */
+  object-fit: cover;
+  /* Đảm bảo ảnh không bị méo */
+  cursor: pointer;
+  /* Con trỏ chuột khi hover vào ảnh */
+}
+
+.dropdownMenu {
+  position: absolute;
+  right: 0;
+  /* Căn phải menu */
+  top: 100%;
+  /* Xuống dưới ảnh đại diện */
+  background: white;
+  /* Màu nền menu */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* Đổ bóng cho menu */
+  border-radius: 5px;
+  z-index: 1000;
+  /* Đảm bảo menu nằm trên các phần tử khác */
+  padding: 10px 0;
+  /* Khoảng cách bên trong menu */
+  width: max-content;
+
+}
+
+.dropdownMenu a,
+.dropdownMenu span {
+  display: block;
+  padding: 10px 20px;
+  /* Khoảng cách cho các mục trong menu */
+  text-decoration: none;
+  /* Tắt gạch chân */
+  color: #333;
+  /* Màu chữ */
+  transition: background 0.3s;
+  /* Hiệu ứng chuyển màu nền */
+}
+
+.dropdownMenu a:hover,
+.dropdownMenu span:hover {
+  background: #f0f0f0;
+  /* Màu nền khi hover */
+  cursor: pointer;
+}
+
+.bell_icon {
+  width: 30px;
+  margin-right: 20px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.bell_icon:hover {
+  background-color: #f0f0f0;
+}
+
+.notificationContainer {
+  position: relative;
+  /* Để định vị các thành phần bên trong */
+  margin-right: 20px;
+  /* Khoảng cách giữa chuông và tên người dùng */
+}
+
+.messageCount {
+  background: rgb(224, 19, 19);
+  /* Màu nền cho số lượng tin nhắn */
+  color: white;
+  /* Màu chữ */
+  border-radius: 50%;
+  /* Đường viền tròn */
+  width: 25px;
+  /* Chiều rộng */
+  height: 25px;
+  /* Chiều cao */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Căn giữa nội dung */
+  font-size: 14px;
+  /* Kích thước chữ */
+  position: absolute;
+  /* Đặt vị trí tuyệt đối */
+  top: -5px;
+  /* Di chuyển lên trên một chút */
+  right: 10px;
+  /* Di chuyển sang phải một chút */
+}
+
+.avatarWrapper {
+  width: 50px;
+  /* Kích thước chiều rộng của bọc */
+  height: 50px;
+  /* Kích thước chiều cao của bọc */
+  border: 2px solid #4CAF50;
+  /* Màu và độ dày của viền */
+  border-radius: 50%;
+  /* Tạo viền tròn */
+  display: flex;
+  /* Căn giữa nội dung bên trong */
+  align-items: center;
+  /* Căn giữa theo chiều dọc */
+  justify-content: center;
+  /* Căn giữa theo chiều ngang */
+  overflow: hidden;
+  /* Ẩn phần nào đó vượt ra ngoài viền */
+}
+
+.menuLi,
+.dropdownMenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Style for the dropdown menu */
+.bookingMenu {
+  position: relative;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  border-radius: 4px;
+  min-width: 150px;
+  z-index: 10;
+  right: 0;
+}
+
+.dropdownMenu li {
+  padding: 8px 16px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.dropdownMenu li:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdownMenu a {
+  color: #333;
+  text-decoration: none;
+}
+
+.textcolor {
+  color: #45a049;
+  cursor: pointer;
+}
+
+.notificationsDropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+.unseen {
+  background-color: #e8f5e9;
+}
+
+.popoverContent {
+  max-height: 327px;
+  /* Kích thước cố định */
+  overflow-y: auto;
+  /* Cho phép cuộn dọc khi nội dung dài */
+  width: 360px;
+  /* Kích thước cố định của Popover */
+  background-color: #ffffff;
+  /* Màu nền trắng cho Popover */
+  border-radius: 18px;
+  /* Bo góc để nhìn mềm mại hơn */
+  border: solid 1px #8de993;
+}
+
+.popoverItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+}
+
+.popoverTitle {
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center;
+  /* Đảm bảo chấm xanh và tiêu đề căn chỉnh theo chiều dọc */
+}
+
+.popoverDescription {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.popoverDate {
+  font-size: 12px;
+  color: #666565;
+  margin-left: 230px;
+  margin-top: -26px;
+  display: block;
+}
+
+.popoverDetails {
+  margin-left: 10px;
+  position: relative;
+
+}
+
+.unreadDot {
+  width: 7px;
+  height: 7px;
+  background-color: #52c41a;
+  /* Màu xanh lá */
+  border-radius: 50%;
+  position: absolute;
+  top: 17px;
+  right: 20px;
+}
+
+.readDot {
+  width: 7px;
+  height: 7px;
+  /* Màu xanh lá */
+  border-radius: 50%;
+  position: absolute;
+  top: 17px;
+  right: 20px;
+  background-color: grey;
+  /* Chấm xám cho thông báo đã đọc */
+}
+
+/* Đảm bảo các mục thông báo không bị lệch khi cuộn */
+.popoverContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.popoverContent::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+
+
+/* Ghi đè lên button của Ant Design */
+.ant-btn:hover {
+  background-color: transparent !important;
+  /* Tắt màu nền hover */
+  border-color: transparent !important;
+  /* Tắt màu viền hover */
+  color: inherit !important;
+  /* Giữ nguyên màu chữ */
+  box-shadow: none !important;
+  /* Xóa bỏ bóng chữ khi hover */
+}
+
+.ant-btn {
+  margin-left: -10px;
+  margin-top: 5px;
+  margin-bottom: 2px;
+  background: none;
+  /* Tắt hiệu ứng nền */
+  border: none;
+  /* Tắt hiệu ứng viền */
+}
+
+/* Styling the Popover title */
+.popover-title {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0;
+  position: relative;
+  display: inline-block;
+  width: 93%;
+  text-align: center;
+}
+
+/* Add a line below the title */
+.popover-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  /* Position the line just below the title */
+  left: 0;
+  width: 100%;
+  height: 2px;
+  /* Line thickness */
+}
+
+.ant-popover-content {
+  top: 20px;
+}
+
+.ant-popover-arrow {
+  top: 20px !important;
+}
+.DivMarkAsRead {
+  padding-bottom: 5px;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px; /* Khoảng cách giữa hai icon */
+}
+
+.notification-read-all-wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: #effff0;
+  border: solid 1px #ada8a8;
+  border-radius: 4px;
+}
+
+.MarkAsRead{
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  display: inline-block;
+  padding: 0;
+  margin-right:-5px;
+  margin-top: 40px;
+}
+
+.MarkAsReadWrapper, .SeenMessageWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+
+.button_detail{
+  font-weight: bolder;
+}
+.ant-segmented{
+  margin-top: 40px;
+  margin-bottom: -2px !important;
+}

@@ -1,0 +1,119 @@
+/* Toàn bộ trang */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5; /* Màu nền trang */
+  }
+  
+  /* Container chính của form đăng nhập */
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Chiều cao 100% của màn hình */
+    background-image: url('./register1.jpg'); /* Hình nền nhẹ nhàng */
+    background-size: cover;
+    background-position: center;
+    padding-left: 50px; /* Điều chỉnh khoảng cách bên trái của container */
+  }
+  
+  /* Form đăng nhập */
+  .login-form {
+    background-color: rgba(255, 255, 255, 0.8); /* Màu nền trắng với độ mờ */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    margin-left: 50px;
+    backdrop-filter: blur(10px); /* Hiệu ứng mờ */
+  }
+  
+  /* Tiêu đề form */
+  .login-form h2 {
+    text-align: center;
+    color: #4CAF50;
+    margin-bottom: 30px;
+  }
+  
+  /* Nhóm các form input */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  /* Label cho input */
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Input style */
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
+  
+  /* Input khi hover */
+  .form-group input:focus {
+    border-color: #4CAF50;
+    outline: none;
+  }
+  
+  /* Nút đăng nhập */
+  .login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Hiệu ứng khi hover lên nút đăng nhập */
+  .login-button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Link đăng ký */
+  .register-link {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .register-link a {
+    color: #4CAF50;
+    text-decoration: none;
+  }
+  
+  .register-link a:hover {
+    text-decoration: underline;
+  }
+  .password-input-container {
+    position: relative;
+  }
+  
+  .password-input-container input {
+    width: 100%;
+    padding-right: 2.5rem; /* Chừa khoảng trống cho nút chuyển đổi */
+  }
+  
+  .toggle-password {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
