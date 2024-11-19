@@ -10,6 +10,7 @@ import Home from './pages/home/Home';
 import BookingAppointment from './pages/appointment/BookingAppointment';
 import GetAppointment from './pages/get_appointment/appointment';
 import SetAppointment from './pages/create_appointment/appointment';
+import DoctorAppointments from './pages/doctor_appointment/doctor_appointment';
 
 export const mainRouters = [
   {
@@ -45,6 +46,11 @@ export const mainRouters = [
   {
     path: '/lich-hen-benh-nhan',
     component: SetAppointment,
+    layout: MainLayout,
+  },
+  {
+    path: '/lich-hen-bac-si',
+    component: DoctorAppointments,
     layout: MainLayout,
   }
 ];

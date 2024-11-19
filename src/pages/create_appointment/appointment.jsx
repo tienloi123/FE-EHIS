@@ -32,18 +32,6 @@ const GetAppointment = () => {
     return { time, date };
   };
 
-  const getDate = (datetime) => {
-    if (!datetime) return { time: '', date: '' };
-    const [time, date] = datetime.split(' ');
-
-    const formattedDate = new Date(date).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-
-    return { time, date: formattedDate };
-  };
   const calculateEndTime = () => {
     if (!customEndTime) return '';
 
@@ -134,7 +122,7 @@ const GetAppointment = () => {
         },
       });
       console.log(response);
-      
+
       setLichKham(response.data);
     } catch (err) {
       setError('Có lỗi xảy ra khi lấy dữ liệu.');
@@ -209,7 +197,7 @@ const GetAppointment = () => {
         <thead>
           <tr>
             <th>
-              Ngày đặt
+              Mã khám bệnh
             </th>
             <th>Ngày khám</th>
             <th>Thời gian bắt đầu</th>
@@ -225,17 +213,13 @@ const GetAppointment = () => {
             lichKham.map((appointment) => {
               const { time: startTime, date: startDate } = getTimeAndDate(appointment.start_time);
               const { time: endTime } = getTimeAndDate(appointment.end_time || '');
-              const { time: created_Time, date: created_Date } = getDate(appointment.created_at);
 
               return (
                 <tr key={appointment.id} onClick={() => {
                   handleRowClick(appointment)
                   setSelectedDoctor(null)
                 }}>
-                  <td>
-                    <div>{created_Time}</div>
-                    <div style={{ margin: '10px' }}>{created_Date}</div>
-                  </td>
+                  <td>{appointment.id}</td>
                   <td>{startDate}</td>
                   <td>{formatTimeTo12Hour(startTime)}</td>
                   <td>{formatTimeTo12Hour(endTime) || ' '}</td>
@@ -270,12 +254,6 @@ const GetAppointment = () => {
               <img src={Info} alt="" className="DetailImage" />
               <span>Chi tiết lịch khám</span>
             </div>
-
-            <p style={{ marginTop: '30px' }}>
-              <strong>Ngày đặt: </strong>
-              <input type="text" value={getDate(selectedAppointment.created_at).date} className="staticInput" readOnly />
-            </p>
-
             <p style={{ marginTop: '17px' }}>
               <strong>Ngày khám: </strong>
               <input type="text" value={getTimeAndDate(selectedAppointment.start_time).date} className="staticInput" readOnly />

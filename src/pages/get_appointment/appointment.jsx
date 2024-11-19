@@ -65,29 +65,17 @@ const GetAppointment = () => {
     const [time, date] = datetime.split(' ');
     return { time, date };
   };
-  const getDate = (datetime) => {
-    if (!datetime) return { time: '', date: '' };
-    const [time, date] = datetime.split(' ');
-
-    // Định dạng ngày theo yêu cầu "10 Oct 2024"
-    const formattedDate = new Date(date).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-
-    return { time, date: formattedDate };
-  };
 
   return (
     <div className="lichKhamContainer">
       <div className='title'>
         <h1>Lịch khám</h1>
-        <img src={APPOINTMENT} className="appointmenImage" />
+        <img src={APPOINTMENT} className="appointmenImage"alt='APPOINTMENT' />
       </div>
       <table className="lichKhamTable">
         <thead>
           <tr>
+          <th>Mã khám bệnh</th>
             <th>
               <button className='Filter' onClick={toggleSortOrder}>
                 <img src={Filter} alt="Filter" className='Filter_Image' />
@@ -108,13 +96,13 @@ const GetAppointment = () => {
             lichKham.map((appointment) => {
               const { time: startTime, date: startDate } = getTimeAndDate(appointment.start_time);
               const { time: endTime } = getTimeAndDate(appointment.end_time || '');
-              const { time: created_Time, date: created_Date } = getDate(appointment.created_at);
+              const {date: createdDate } = getTimeAndDate(appointment.created_at);
 
               return (
                 <tr key={appointment.id}>
+                  <td>{appointment.id}</td>
                   <td>
-                    <div>{created_Time}</div>
-                    <div style={{ margin: '10px' }}>{created_Date}</div>
+                    <div style={{ margin: '10px' }}>{createdDate}</div>
                   </td>
                   <td>{startDate}</td>
                   <td>{startTime}</td>
@@ -135,7 +123,7 @@ const GetAppointment = () => {
 
         </tbody>
       </table>
-      {lichKham.length === 0 && <div colSpan="8" className="noData">
+      {lichKham.length === 0 && <div colSpan="9" className="noData">
         <img src={DATA} alt="Không có dữ liệu" className="noDataImage" />
         <span>Không có thông tin khám bệnh nào.</span>
       </div>}

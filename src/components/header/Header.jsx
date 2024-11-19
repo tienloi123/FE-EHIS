@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import bellIcon from '../../assets/icons/bell-icon.png';
@@ -9,7 +9,7 @@ import axiosClient from './../../axiosClient';
 import { AuthContext } from '../../context/AuthContext';
 import ToastNotify from '../common/ToastNotify';
 import { toast } from 'react-toastify';
-import { Popover, Badge, Segmented, Button ,Tooltip, List} from 'antd';
+import { Popover, Badge, Segmented, Button, Tooltip, List } from 'antd';
 import Pusher from 'pusher-js';
 import MarkAsRead from '../../assets/icons/mark-all-as-read.png';
 
@@ -24,24 +24,30 @@ export const Header = () => {
   const [expandedNotification, setExpandedNotification] = useState(null);
 
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!isLoggedIn) {
-      setNotifications([]);  // Nếu chưa đăng nhập, xóa thông báo
+      setNotifications([]);
       setMessageCount(0);
       return;
     }
 
     try {
-      const response = await axiosClient.get('/notification/get_all'); // Đảm bảo rằng API này trả về đúng định dạng
+      const response = await axiosClient.get('/notification/get_all'); // API call
       if (response.data && Array.isArray(response.data)) {
         setNotifications(response.data);
-        console.log(response.data)
-        setMessageCount(response.data.filter(notificationItem => !notificationItem.is_seen).length); // Đếm số lượng thông báo
+        console.log(response.data);
+        setMessageCount(response.data.filter(notificationItem => !notificationItem.is_seen).length);
       }
     } catch (error) {
       console.error("Lỗi khi lấy thông báo:", error);
     }
-  };
+  }, [isLoggedIn]); // Chỉ phụ thuộc vào isLoggedIn
+
+  // useEffect để gọi fetchNotifications khi component được render lần đầu
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]); // Đưa fetchNotifications vào mảng phụ thuộc
+
   const handleSegmentChange = async (value) => {
     if (value === 'Tất cả') {
       try {
@@ -102,12 +108,9 @@ export const Header = () => {
     }
   };
 
-
-
-
   useEffect(() => {
     fetchNotifications();
-  }, [isLoggedIn]);  // Thêm isLoggedIn vào dependency để khi trạng thái thay đổi, thông báo sẽ được cập nhật
+  }, [fetchNotifications], [isLoggedIn]);  // Thêm isLoggedIn vào dependency để khi trạng thái thay đổi, thông báo sẽ được cập nhật
 
   const requestNotificationPermission = async () => {
     if (Notification.permission === 'default') {
@@ -125,28 +128,25 @@ export const Header = () => {
 
     // Lắng nghe sự kiện 'notification' từ Pusher
     channel.bind('notification', (data) => {
-      const formattedDate = new Date(data.start_date).toLocaleDateString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
-
       // Lấy ngày hiện tại và chuyển đổi thành định dạng "DD/MM/YYYY"
       const currentDate = new Date().toLocaleDateString('vi-VN', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
       });
+      console.log('DATACHAT:', data)
       // Thêm thông báo vào danh sách notifications
       setNotifications((prevNotifications) => [
         {
           title: data.title,
           description: data.description,
-          doctor: data.doctor,
-          start_date: data.formattedDate,
+          doctor_name: data.doctor.name,
+          start_date: data.start_date,
           start_time: data.start_time,
+          clinic_location: data.doctor.clinic_location,
           is_seen: false,
           created_at: currentDate,
+          _id: data._id,
         },
         ...prevNotifications,
       ]);
@@ -156,34 +156,58 @@ export const Header = () => {
       toast.info(
         <div className="notification-toast">
           <h4 className="toast-title">{data.title}</h4>
-          <p><strong>Bác sĩ:</strong> {data.doctor.name}</p>
-          <p><strong>Phòng khám:</strong> {data.doctor.clinic_location}</p>
-          <p><strong>Ngày khám:</strong> {data.start_date}</p>
-          <p><strong>Thời gian:</strong> {data.start_time}</p>
+          {/* Kiểm tra nếu thông báo là "Thông báo tạo hồ sơ mới" */}
+          {data.title === 'Thông báo tạo hồ sơ mới' ? (
+            <p>{data.description}</p>
+          ) : data.title === 'Thông báo mới từ bệnh nhân' ? (
+            <p>{data.description}</p>
+          ) : (
+            <>
+              <p><strong>Bác sĩ:</strong> {data.doctor.name}</p>
+              <p><strong>Phòng khám:</strong> {data.doctor.clinic_location}</p>
+              <p><strong>Ngày khám:</strong> {data.start_date}</p>
+              <p><strong>Thời gian:</strong> {data.start_time}</p>
+            </>
+          )}
         </div>,
         {
           position: 'bottom-left',
           autoClose: 10000,
         }
       );
+
       // Đẩy thông báo lên trình duyệt với thiết kế hợp lý
       if (Notification.permission === 'granted') {
-        const notification = new Notification(data.title, {
-          body: `🩺 Bác sĩ: ${data.doctor.name}\n🏥 Phòng khám: ${data.doctor.clinic_location}\n📅 Ngày khám: ${formattedDate}\n⏰ Thời gian: ${data.start_time}`,
+        // Khởi tạo các tùy chọn cho thông báo
+        const notificationOptions = {
+          body: `🩺 Bác sĩ: ${data.doctor.name}\n🏥 Phòng khám: ${data.doctor.clinic_location}\n📅 Ngày khám: ${data.start_date}\n⏰ Thời gian: ${data.start_time}`,
           icon: '../../assets/icons/notification-icon.png', // Thay thế với đường dẫn tới icon của bạn
-          badge: '../../assets/icons/notification-badge.png' // (nếu có) icon nhỏ ở góc dưới giúp nhận diện thông báo
-        });
-
-        // Tùy chọn: Để thông báo mở trang hoặc làm gì đó khi người dùng click vào
+          badge: '../../assets/icons/notification-badge.png', // (nếu có) icon nhỏ ở góc dưới giúp nhận diện thông báo
+        };
+      
+        // Nếu thông báo là "Thông báo tạo hồ sơ mới", chỉ hiển thị phần description
+        if (data.title === 'Thông báo tạo hồ sơ mới') {
+          notificationOptions.body = data.description;  // Chỉ hiển thị description
+        }
+      
+        // Nếu thông báo là "Thông báo hủy lịch hẹn", chỉ hiển thị phần thông tin liên quan đến lịch hẹn
+        if (data.title === 'Thông báo mới từ bệnh nhân') {
+          notificationOptions.body = data.description;  // Chỉ hiển thị description
+        }
+      
+        // Tạo thông báo với title và các tùy chọn đã xác định
+        const notification = new Notification(data.title, notificationOptions);
+      
+        // Xử lý khi người dùng click vào thông báo
         notification.onclick = () => {
           window.focus(); // Hoặc điều hướng đến trang chi tiết cuộc hẹn
         };
       } else if (Notification.permission === 'default') {
-        requestNotificationPermission(); // Gọi lại nếu người dùng chưa cho phép
-      }
-
-
-    });
+        // Yêu cầu quyền thông báo nếu chưa được cấp
+        requestNotificationPermission(); 
+      };
+    }
+      );
 
     return () => {
       pusher.unsubscribe(channelName); // Hủy đăng ký channel khi component bị unmount
@@ -222,48 +246,96 @@ export const Header = () => {
     <div className="popoverContent">
       <List
         dataSource={notifications}
-        renderItem={(item) => (
-          <List.Item key={item._id} className="popoverItem">
-            <div className="popoverDetails">
-              {/* Đổi màu chấm nếu thông báo đã đọc */}
-              {!item.is_seen ? <div className="unreadDot" /> : ''}
-              <p><strong>{item.title}</strong></p>
-              <p>{item.description}</p>
+        renderItem={(item) => {
+          let itemDetails;
 
-              {/* Nếu có nội dung mở rộng */}
-              {expandedNotification === item._id ? (
+          // Phân loại thông báo theo `type`
+          console.log(item.type)
+          switch (item.title) {
+            case 'Thông báo lịch hẹn mới':
+              itemDetails = (
                 <>
                   <p><strong>Bác sĩ:</strong> {item.doctor_name}</p>
                   <p><strong>Ngày khám:</strong> {item.start_date}</p>
                   <p><strong>Thời gian:</strong> {item.start_time}</p>
                   <p><strong>Phòng khám:</strong> {item.clinic_location}</p>
+                  <p style={{ fontStyle: 'italic', color: 'gray' }}>
+                    ( Thông báo từ Lễ tân )
+                  </p>
+                </>
+              );
+              break;
+
+            case 'Thông báo tạo hồ sơ mới':
+              itemDetails = (
+                <p>
+                  {item.description}
+                  <p style={{ fontStyle: 'italic', color: 'gray' }}>
+                    ( Thông báo từ Bác sĩ )
+                  </p>
+                </p>
+              );
+              break;
+
+            case 'Thông báo mới từ bệnh nhân':
+              itemDetails = (
+                <p>
+                  {item.description}
+                  <p style={{ fontStyle: 'italic', color: 'gray' }}>
+                    ( Thông báo từ Bệnh nhân )
+                  </p>
+                </p>
+              );
+              break;
+
+            default:
+              itemDetails = <p>{item.description}</p>;
+          }
+
+          return (
+            <List.Item key={item._id} className={`popoverItem ${item.type}`}>
+              <div className="popoverDetails">
+                {/* Chấm hiển thị trạng thái chưa đọc */}
+                {!item.is_seen && <div className="unreadDot" />}
+
+                <p><strong>{item.title}</strong></p>
+
+                {/* Nội dung chi tiết */}
+                {expandedNotification === item._id ? (
+                  <>
+                    {itemDetails}
+                    <Button
+                      onClick={() => toggleNotificationDetails(item._id)}
+                      type="text"
+                      icon={<img src={Up} width={20} alt="Hide details" />}
+                      className="button_detail"
+                    >
+                      Hide
+                    </Button>
+                  </>
+                ) : (
                   <Button
                     onClick={() => toggleNotificationDetails(item._id)}
-                    type='text'
-                    icon={<img src={Up} width={20} />}
-                    className='button_detail'>
-                    Hide
+                    icon={<img src={Eye} width={20} alt="More details" />}
+                    className="button_detail"
+                    type="text"
+                  >
+                    More
                   </Button>
-                </>
-              ) : (
-                <Button
-                  onClick={() => toggleNotificationDetails(item._id)}
-                  icon={<img src={Eye} width={20} />}
-                  className='button_detail'
-                  type="text">
-                  More
-                </Button>
-              )}
-              <div className="popoverDate">
-                {item.created_at}
-              </div>
-            </div>
-          </List.Item>
+                )}
 
-        )}
+                {/* Ngày giờ thông báo */}
+                <div className="popoverDate">
+                  {item.created_at}
+                </div>
+              </div>
+            </List.Item>
+          );
+        }}
       />
     </div>
   );
+
 
 
   return (
@@ -280,32 +352,67 @@ export const Header = () => {
 
           {role === 'Patient' ? (
             <>
-              <li className='bookingMenu' onMouseEnter={() => setBookingMenuOpen(true)} onMouseLeave={() => setBookingMenuOpen(false)}>
+              <li
+                className='bookingMenu'
+                onMouseEnter={() => setBookingMenuOpen(true)}
+                onMouseLeave={() => setBookingMenuOpen(false)}
+              >
                 <span className='textcolor'>Khám bệnh</span>
                 {bookingMenuOpen && (
                   <ul className='dropdownMenu'>
-                    <li><Link to="/dat-lich-kham" onClick={(e) => handleProtectedLink(e, '/dat-lich-kham')}>Đặt lịch khám</Link></li>
-                    <li><Link to="/xem-lich-kham" onClick={(e) => handleProtectedLink(e, '/lich-kham-cua-toi')}>Xem lịch khám</Link></li>
+                    <li>
+                      <Link to="/dat-lich-kham" onClick={(e) => handleProtectedLink(e, '/dat-lich-kham')}>
+                        Đặt lịch khám
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/xem-lich-kham" onClick={(e) => handleProtectedLink(e, '/lich-kham-cua-toi')}>
+                        Xem lịch khám
+                      </Link>
+                    </li>
                   </ul>
                 )}
               </li>
-              <li><Link to="/ho-so-benh-an" onClick={(e) => handleProtectedLink(e, '/ho-so-benh-an')}>Hồ Sơ Bệnh Án</Link></li>
-              <li><Link to="/tin-tuc">Tin tức</Link></li>
+              <li>
+                <Link to="/ho-so-benh-an" onClick={(e) => handleProtectedLink(e, '/ho-so-benh-an')}>
+                  Hồ Sơ Bệnh Án
+                </Link>
+              </li>
+              <li>
+                <Link to="/tin-tuc">Tin tức</Link>
+              </li>
             </>
-          ) : role === 'Receptionist' && (
+          ) : role === 'Receptionist' ? (
             <>
-              <li className='bookingMenu' onMouseEnter={() => setAppointmentMenuOpen(true)} onMouseLeave={() => setAppointmentMenuOpen(false)}>
+              <li
+                className='bookingMenu'
+                onMouseEnter={() => setAppointmentMenuOpen(true)}
+                onMouseLeave={() => setAppointmentMenuOpen(false)}
+              >
                 <span className='textcolor'>Quản lý lịch hẹn</span>
                 {appointmentMenuOpen && (
                   <ul className='dropdownMenu'>
-                    <li><Link to="/lich-hen-benh-nhan">Lịch hẹn của bệnh nhân</Link></li>
-                    <li><Link to="/lich-lam-viec-bac-si">Lịch làm việc của bác sĩ</Link></li>
+                    <li>
+                      <Link to="/lich-hen-benh-nhan">Lịch hẹn của bệnh nhân</Link>
+                    </li>
+                    <li>
+                      <Link to="/lich-lam-viec-bac-si">Lịch làm việc của bác sĩ</Link>
+                    </li>
                   </ul>
                 )}
               </li>
-              <li><Link to="/thanh-toan">Thanh toán</Link></li>
+              <li>
+                <Link to="/thanh-toan">Thanh toán</Link>
+              </li>
+            </>
+          ) : role === 'Doctor' && (
+            <>
+              <li>
+                <Link to="/lich-hen-bac-si">Xem lịch hẹn</Link>
+              </li>
             </>
           )}
+
         </ul>
       </div>
 
@@ -323,7 +430,7 @@ export const Header = () => {
                   </span>
                   <div className="DivMarkAsRead">
                     <Tooltip title="Đánh dấu tất cả đã đọc">
-                        <img src={MarkAsRead} alt="Mark as Read" className="MarkAsRead" onClick={markAllAsRead}/>
+                      <img src={MarkAsRead} alt="Mark as Read" className="MarkAsRead" onClick={markAllAsRead} />
                     </Tooltip>
                     <div>
                       <Segmented
@@ -346,7 +453,7 @@ export const Header = () => {
           <div className='user_name'>Xin chào, {user}!</div>
           <div className='avatarContainer' onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)}>
             <div className='avatarWrapper'>
-              <img src={Avatar} className='avatar' />
+              <img src={Avatar} className='avatar' alt='' />
               {menuOpen && (
                 <div className='dropdownMenu'>
                   <Link to="/settings">Cài đặt</Link>

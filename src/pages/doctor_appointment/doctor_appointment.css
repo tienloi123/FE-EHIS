@@ -1,0 +1,143 @@
+/* Center alignment, background color, and padding */
+.ant-popover:has(.ant-popconfirm-message) {
+  width: max-content;
+  height: max-content;
+  background-color: #f0f5ff !important; /* Light background */
+  padding: 10px !important;
+  border-radius: 10px !important; /* Rounded corners */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important; /* Soft shadow */
+  transform: translate(-50%, -50%) !important;
+  position: fixed !important;
+  top: 55% !important;
+  left: 50% !important;
+}
+.ant-popover-inner{
+  width: max-content;
+  margin-bottom: 30px;
+}
+.ant-form-item{
+  margin-right: 80px !important;
+}
+/* Text styling inside Popconfirm */
+.ant-popover-inner-content p {
+  font-size: 1rem !important;
+  color: #333 !important;
+  margin: 8px 0 !important;
+  line-height: 1.5 !important;
+}
+
+/* Input and select styling */
+.ant-popover-inner-content input,
+.ant-popover-inner-content select {
+  width: 100% !important;
+  padding: 8px !important;
+  margin-top: 5px !important;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 5px !important;
+  font-size: 1rem !important;
+  color: #333 !important;
+}
+
+/* Button container styling to space buttons apart */
+.ant-popover-buttons {
+  display: flex !important;
+  justify-content: space-between !important;
+  padding-top: 20px !important;
+}
+
+/* Confirm button styling with visible text */
+.ant-popover-buttons button.ant-btn-primary {
+  background-color: #003a8c !important; /* Dark blue */
+  border-color: #003a8c !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  padding: 8px 20px !important;
+  border-radius: 5px !important;
+  transition: background-color 0.3s ease !important;
+  font-size: 1rem !important;
+  text-transform: none !important; /* Ensures the text is visible without hover */
+}
+
+/* Hover effect on confirm button */
+.ant-popover-buttons button.ant-btn-primary:hover {
+  background-color: #0056b3 !important; /* Slightly lighter blue on hover */
+  border-color: #0056b3 !important;
+}
+
+/* Cancel button styling with color and spacing */
+.ant-popover-buttons button.ant-btn {
+  background-color: #f0f5ff !important;
+  color: #333 !important;
+  border-color: #d9d9d9 !important;
+  padding: 8px 20px !important;
+  border-radius: 5px !important;
+  font-size: 1rem !important;
+}
+
+/* Hover effect on cancel button */
+.ant-popover-buttons button.ant-btn:hover {
+  border-color: #bfbfbf !important;
+}
+
+/* Loading spinner in the Popconfirm */
+.ant-popover .loading {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+/* In đậm label cho tất cả các trường trong form */
+.ant-form-item-label {
+  font-weight: bold !important;
+}
+
+/* Hover effect on confirm button */
+.ant-popover-buttons button.ant-btn-primary:hover {
+  background-color: #0056b3 !important; /* Slightly lighter blue on hover */
+  border-color: #0056b3 !important;
+  color: #fff !important; /* Text color remains visible */
+}
+.ant-popover-title {
+  font-size: 1.4rem !important;         /* Font size for visibility */
+  color: #003a8c !important;            /* Darker blue color */
+  font-weight: bold !important;         /* Bold font */
+  text-align: center !important;        /* Center align the title */
+  padding-bottom: 15px !important;
+  border-bottom: 1px solid #d9d9d9 !important; 
+}
+:where(.css-dev-only-do-not-override-apn68).ant-btn-variant-solid {
+  color: #fff;
+  background: #1677ff !important;
+}
+.ant-popconfirm-message-text{
+  flex: 1 !important;
+}
+.ant-popconfirm-title{
+  font-family: 'Times New Roman';
+  font-weight: bold;
+  margin-right: 10px;
+  font-size: 22px;
+  text-align: center;
+}
+.ant-popover-inner-content input{
+  width: 470px !important;
+}
+.ant-popconfirm-message-icon{
+  display: none;
+}
+/* In đậm các label trong Form và căn trái */
+.ant-form-item-label {
+  font-weight: bold;
+  text-align: left !important; /* Căn trái các nhãn */
+  display: flex;
+  align-items: center; /* Căn giữa theo chiều dọc nếu cần */
+}
+
+/* Căn chỉnh wrapper cho các trường nhập liệu */
+.ant-form-item-control-wrapper {
+  display: flex;
+  align-items: center; /* Đảm bảo các trường nhập liệu căn chỉnh theo chiều dọc */
+}
+.ant-form-item {
+  margin-bottom: 8px !important; /* Giảm khoảng cách giữa các ô input */
+}
