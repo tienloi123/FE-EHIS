@@ -64,7 +64,6 @@ const DoctorAppointments = () => {
 
     // Kiểm tra nếu `dateTime` không hợp lệ
     if (isNaN(dateTime)) {
-      console.error('Invalid Date object:', dateTime);
       return '';
     }
 
@@ -92,13 +91,22 @@ const DoctorAppointments = () => {
         return;
       }
 
-      await axiosClient.put(`/appointment/${appointment_id}`, {
+      await axiosClient.put(`/appointment/doctor/${appointment_id}`, {
         doctor_id: doctorId,
         start_time: startTime,
         end_time: endTime,
       });
       fetchLichKham();
       closeDetailModal();
+      closeModal();
+      setFormData({
+        diagnosis: '',
+        prescription: '',
+        payment_amount: '',
+        test_name: '',
+        test_room: '',
+        test_result: '',
+      })
       setStatusStep(false);
       toast.success('Đặt lịch thành công');
     } catch (err) {
@@ -180,13 +188,11 @@ const DoctorAppointments = () => {
     if (selectedAppointment.confirmed_by_doctor_id === user_id && !status_step) {
       CreateMedical()
       updateAppointmentEndTime(); // This will confirm the appointment
-      console.log("Tạo hồ sơ bệnh án");
       toast.success('Hồ sơ bệnh án đã được tạo thành công!');
     } else {
       const medicalDoctorResponse = await CreateMedicalDoctor();
       toast.success('Hồ sơ bệnh án bác sĩ đã được tạo thành công!');
       if (showTestFields) {
-        console.log('medical_record_doctor', medicalDoctorResponse)
         CreateMedicalTest(medicalDoctorResponse.data.id); // Truyền ID từ medical record doctor để liên kết
       }
       closeModal();
@@ -208,7 +214,6 @@ const DoctorAppointments = () => {
       const response = await axiosClient.put(`/appointment/end/${appointment_id}`, {});
       return response;
     } catch (err) {
-      console.error("Chi tiết lỗi:", err); // In chi tiết lỗi ra console
       setError('Có lỗi xảy ra khi lấy dữ liệu.');
       toast.error("Có lỗi xảy ra khi kết thúc lịch khám.");
     } finally {
@@ -224,7 +229,6 @@ const DoctorAppointments = () => {
   };
   const CreateMedicalTest = async (medicalRecordId) => {
     setLoading(true);
-    console.log('CreateMedicalTest', medicalRecordId)
     try {
       const response = await axiosClient.post('/lab-test', {
         medical_record_doctor_id: medicalRecordId,
@@ -233,7 +237,6 @@ const DoctorAppointments = () => {
         result_test: formData.test_result,
       });
 
-      console.log('Tạo lab_test thành công:', response.data);
       return response;
     } catch (error) {
       setError('Có lỗi xảy ra khi tạo xét nghiệm.');
@@ -269,7 +272,6 @@ const DoctorAppointments = () => {
         patient_id: selectedAppointment.patient_id,
         doctor_id: user_id,
       });
-      console.log(response);
 
       setMedicalRecord(response.data);
     } catch (err) {
@@ -294,7 +296,6 @@ const DoctorAppointments = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
 
       setLichKham(response.data);
     } catch (err) {
@@ -307,7 +308,6 @@ const DoctorAppointments = () => {
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment); // Lưu dữ liệu của appointment được chọn
     setSelectedAppointmentDetail(appointment)
-    console.log(appointment)
 
 
   };

@@ -35,11 +35,9 @@ export const Header = () => {
       const response = await axiosClient.get('/notification/get_all'); // API call
       if (response.data && Array.isArray(response.data)) {
         setNotifications(response.data);
-        console.log(response.data);
         setMessageCount(response.data.filter(notificationItem => !notificationItem.is_seen).length);
       }
     } catch (error) {
-      console.error("Lỗi khi lấy thông báo:", error);
     }
   }, [isLoggedIn]); // Chỉ phụ thuộc vào isLoggedIn
 
@@ -54,22 +52,18 @@ export const Header = () => {
         const response = await axiosClient.get('/notification/get_all'); // Đảm bảo rằng API này trả về đúng định dạng
         if (response.data && Array.isArray(response.data)) {
           setNotifications(response.data);
-          console.log(response.data)
           setMessageCount(response.data.filter(notificationItem => !notificationItem.is_seen).length); // Đếm số lượng thông báo
         }
       } catch (error) {
-        console.error("Lỗi khi lấy thông báo:", error);
       }
     } else if (value === 'Chưa đọc') {
       try {
         const response = await axiosClient.get('/notification/message-unread'); // Đảm bảo rằng API này trả về đúng định dạng
         if (response.data && Array.isArray(response.data)) {
           setNotifications(response.data);
-          console.log(response.data)
           setMessageCount(response.data.filter(notificationItem => !notificationItem.is_seen).length); // Đếm số lượng thông báo
         }
       } catch (error) {
-        console.error("Lỗi khi lấy thông báo:", error);
       }
     }
   };
@@ -77,11 +71,9 @@ export const Header = () => {
   const markAllAsRead = async () => {
     try {
       const response = await axiosClient.put('/notification/mark-all-as-read'); // API của bạn
-      console.log('Đã đánh dấu tất cả là đã đọc:', response.data);
       fetchNotifications();
       // Cập nhật lại state hoặc giao diện nếu cần thiết
     } catch (error) {
-      console.error('Lỗi khi đánh dấu tất cả đã đọc:', error);
     }
   };
   const markAsRead = async (notificationId) => {
@@ -104,7 +96,6 @@ export const Header = () => {
         setMessageCount((prevCount) => Math.max(prevCount - 1, 0));
       }
     } catch (error) {
-      console.error("Lỗi khi đánh dấu thông báo là đã đọc:", error);
     }
   };
 
@@ -134,7 +125,6 @@ export const Header = () => {
         month: '2-digit',
         year: 'numeric',
       });
-      console.log('DATACHAT:', data)
       // Thêm thông báo vào danh sách notifications
       setNotifications((prevNotifications) => [
         {
@@ -147,20 +137,44 @@ export const Header = () => {
           is_seen: false,
           created_at: currentDate,
           _id: data._id,
+          receptionist_name: data.receptionist_name,
+          total_payment: data.total_payment,
+          patient_name: data.patient_name,
+          status_payment: data.status_payment,
+          start_date: data.start_date,
         },
         ...prevNotifications,
       ]);
 
       setMessageCount((prevCount) => prevCount + 1);
-
+      console.log(data.status_payment)
       toast.info(
         <div className="notification-toast">
           <h4 className="toast-title">{data.title}</h4>
-          {/* Kiểm tra nếu thông báo là "Thông báo tạo hồ sơ mới" */}
+          {/* Kiểm tra từng trường hợp cụ thể */}
           {data.title === 'Thông báo tạo hồ sơ mới' ? (
             <p>{data.description}</p>
           ) : data.title === 'Thông báo mới từ bệnh nhân' ? (
             <p>{data.description}</p>
+          ) : data.title === 'Thông báo lịch hẹn mới.' ? (
+            <>
+              <p><strong>Bác sĩ:</strong> {data.doctor.name}</p>
+              <p><strong>Phòng khám:</strong> {data.doctor.clinic_location}</p>
+              <p><strong>Ngày khám:</strong> {data.start_date}</p>
+              <p><strong>Thời gian:</strong> {data.start_time}</p>
+            </>
+          ) : data.title === 'Thông báo thanh toán.' ? (
+            <>
+              <p><strong>Lễ Tân:</strong> {data.receptionist_name}</p>
+              <p><strong>Bệnh nhân:</strong> {data.patient_name}</p>
+              <p><strong>Tổng tiền:</strong> {data.total_payment}</p>
+              <p><strong>Trạng thái:</strong> {data.status_payment === 'PENDING'
+                ? 'Chưa thanh toán'
+                : data.status_payment === 'COMPLETED'
+                  ? 'Thành công'
+                  : 'Thanh toán lỗi'}
+              </p>
+            </>
           ) : (
             <>
               <p><strong>Bác sĩ:</strong> {data.doctor.name}</p>
@@ -170,44 +184,71 @@ export const Header = () => {
             </>
           )}
         </div>,
+
         {
           position: 'bottom-left',
           autoClose: 10000,
         }
       );
 
+
       // Đẩy thông báo lên trình duyệt với thiết kế hợp lý
       if (Notification.permission === 'granted') {
-        // Khởi tạo các tùy chọn cho thông báo
+        // Khởi tạo các tùy chọn mặc định cho thông báo
         const notificationOptions = {
-          body: `🩺 Bác sĩ: ${data.doctor.name}\n🏥 Phòng khám: ${data.doctor.clinic_location}\n📅 Ngày khám: ${data.start_date}\n⏰ Thời gian: ${data.start_time}`,
+          body: '',
           icon: '../../assets/icons/notification-icon.png', // Thay thế với đường dẫn tới icon của bạn
-          badge: '../../assets/icons/notification-badge.png', // (nếu có) icon nhỏ ở góc dưới giúp nhận diện thông báo
+          badge: '../../assets/icons/notification-badge.png', // (nếu có) icon nhỏ ở góc dưới
         };
-      
-        // Nếu thông báo là "Thông báo tạo hồ sơ mới", chỉ hiển thị phần description
-        if (data.title === 'Thông báo tạo hồ sơ mới') {
-          notificationOptions.body = data.description;  // Chỉ hiển thị description
+
+        // Xử lý nội dung thông báo theo từng loại title
+        switch (data.title) {
+          case 'Thông báo tạo hồ sơ mới':
+            notificationOptions.body = data.description || 'Thông báo mới về hồ sơ.';
+            break;
+
+          case 'Thông báo mới từ bệnh nhân':
+            notificationOptions.body = data.description || 'Bệnh nhân gửi thông báo mới.';
+            break;
+
+          case 'Thông báo thanh toán.':
+            notificationOptions.body = `🩺 Lễ tân: ${data.receptionist_name || 'Không xác định'}\n` +
+              `💳 Tổng tiền: ${data.total_payment || 'Không xác định'}\n` +
+              `📅 Trạng thái: ${data.status_payment === 'PENDING'
+                ? 'Chưa thanh toán'
+                : data.status_payment === 'COMPLETED'
+                  ? 'Thành công'
+                  : 'Thanh toán lỗi'
+              }`;
+            break;
+          case 'Thông báo lịch hẹn mới.':
+            notificationOptions.body = `🩺 Bác sĩ: ${data.doctor?.name || 'Không xác định'}\n` +
+              `🏥 Phòng khám: ${data.doctor?.clinic_location || 'Không xác định'}\n` +
+              `📅 Ngày khám: ${data.start_date || 'Không xác định'}\n` +
+              `⏰ Thời gian: ${data.start_time || 'Không xác định'}`;
+            break;
+
+          default:
+            notificationOptions.body = `🩺 Bác sĩ: ${data.doctor?.name || 'Không xác định'}\n` +
+              `🏥 Phòng khám: ${data.doctor?.clinic_location || 'Không xác định'}\n` +
+              `📅 Ngày khám: ${data.start_date || 'Không xác định'}\n` +
+              `⏰ Thời gian: ${data.start_time || 'Không xác định'}`;
+            break;
         }
-      
-        // Nếu thông báo là "Thông báo hủy lịch hẹn", chỉ hiển thị phần thông tin liên quan đến lịch hẹn
-        if (data.title === 'Thông báo mới từ bệnh nhân') {
-          notificationOptions.body = data.description;  // Chỉ hiển thị description
-        }
-      
+
         // Tạo thông báo với title và các tùy chọn đã xác định
         const notification = new Notification(data.title, notificationOptions);
-      
+
         // Xử lý khi người dùng click vào thông báo
         notification.onclick = () => {
           window.focus(); // Hoặc điều hướng đến trang chi tiết cuộc hẹn
         };
       } else if (Notification.permission === 'default') {
         // Yêu cầu quyền thông báo nếu chưa được cấp
-        requestNotificationPermission(); 
-      };
+        requestNotificationPermission();
+      }
     }
-      );
+    );
 
     return () => {
       pusher.unsubscribe(channelName); // Hủy đăng ký channel khi component bị unmount
@@ -250,7 +291,6 @@ export const Header = () => {
           let itemDetails;
 
           // Phân loại thông báo theo `type`
-          console.log(item.type)
           switch (item.title) {
             case 'Thông báo lịch hẹn mới':
               itemDetails = (
@@ -261,6 +301,39 @@ export const Header = () => {
                   <p><strong>Phòng khám:</strong> {item.clinic_location}</p>
                   <p style={{ fontStyle: 'italic', color: 'gray' }}>
                     ( Thông báo từ Lễ tân )
+                  </p>
+                </>
+              );
+              break;
+            case 'Thông báo lịch hẹn mới':
+              itemDetails = (
+                <>
+                  <p><strong>Bác sĩ:</strong> {item.doctor_name}</p>
+                  <p><strong>Ngày khám:</strong> {item.start_date}</p>
+                  <p><strong>Thời gian:</strong> {item.start_time}</p>
+                  <p><strong>Phòng khám:</strong> {item.clinic_location}</p>
+                  <p style={{ fontStyle: 'italic', color: 'gray' }}>
+                    ( Thông báo từ Lễ tân )
+                  </p>
+                </>
+              );
+              break;
+            case 'Thông báo thanh toán.':
+              console.log(item)
+              const paymentStatus = item.status_payment === 'PENDING'
+                ? 'Chưa thanh toán'
+                : item.status_payment === 'COMPLETED'
+                  ? 'Thành công'
+                  : 'Thanh toán lỗi';
+              itemDetails = (
+                <>
+                  <p><strong>Lễ tân:</strong> {item.receptionist_name}</p>
+                  <p>{item.description}</p>
+                  <p><strong>Bệnh nhân:</strong> {item.patient_name}</p>
+                  <p><strong>Tổng tiền:</strong> {item.total_payment}</p>
+                  <p><strong>Trạng thái:</strong> {paymentStatus}</p>
+                  <p style={{ fontStyle: 'italic', color: 'gray' }}>
+                    ( Thông báo từ Bác sĩ )
                   </p>
                 </>
               );

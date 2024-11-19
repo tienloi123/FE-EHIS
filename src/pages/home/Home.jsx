@@ -45,7 +45,6 @@ const Home = () => {
             <li><strong>Quản lý hồ sơ bệnh án:</strong> Dễ dàng quản lý thông tin bệnh án và lịch sử điều trị.</li>
             <li><strong>Hẹn khám:</strong> Đặt lịch hẹn nhanh chóng và nhận thông báo tự động.</li>
             <li><strong>Thông báo kịp thời:</strong> Nhận thông báo về lịch khám và các thông tin quan trọng.</li>
-            <li><strong>Tích hợp AI:</strong> Phân tích dữ liệu và dự đoán các vấn đề sức khỏe tiềm ẩn.</li>
           </ul>
         </div>
         <div className='video-section'>

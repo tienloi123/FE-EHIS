@@ -69,7 +69,6 @@ const GetAppointment = () => {
 
     // Kiểm tra nếu `dateTime` không hợp lệ
     if (isNaN(dateTime)) {
-      console.error('Invalid Date object:', dateTime);
       return '';
     }
 
@@ -121,7 +120,6 @@ const GetAppointment = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
 
       setLichKham(response.data);
     } catch (err) {

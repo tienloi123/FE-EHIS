@@ -10,7 +10,6 @@ const BookingAppointment = () => {
   const [appointmentTime, setAppointmentTime] = useState('');
   const navigate = useNavigate();
   const startTime = `${appointmentTime}:00 ${appointmentDate.split('-').reverse().join('/')}`;
-  console.log(startTime)
 
 
   const handleSubmit = async (event) => {
