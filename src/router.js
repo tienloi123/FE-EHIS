@@ -11,6 +11,7 @@ import BookingAppointment from './pages/appointment/BookingAppointment';
 import GetAppointment from './pages/get_appointment/appointment';
 import SetAppointment from './pages/create_appointment/appointment';
 import DoctorAppointments from './pages/doctor_appointment/doctor_appointment';
+import PaymentPage from './pages/payment/payment';
 
 export const mainRouters = [
   {
@@ -51,6 +52,11 @@ export const mainRouters = [
   {
     path: '/lich-hen-bac-si',
     component: DoctorAppointments,
+    layout: MainLayout,
+  },
+  {
+    path: '/thanh-toan',
+    component: PaymentPage,
     layout: MainLayout,
   }
 ];

@@ -70,7 +70,7 @@ export const Header = () => {
 
   const markAllAsRead = async () => {
     try {
-      const response = await axiosClient.put('/notification/mark-all-as-read'); // API của bạn
+      await axiosClient.put('/notification/mark-all-as-read'); // API của bạn
       fetchNotifications();
       // Cập nhật lại state hoặc giao diện nếu cần thiết
     } catch (error) {
@@ -141,7 +141,6 @@ export const Header = () => {
           total_payment: data.total_payment,
           patient_name: data.patient_name,
           status_payment: data.status_payment,
-          start_date: data.start_date,
         },
         ...prevNotifications,
       ]);
@@ -305,7 +304,7 @@ export const Header = () => {
                 </>
               );
               break;
-            case 'Thông báo lịch hẹn mới':
+            case 'Thông báo lịch hẹn mới.':
               itemDetails = (
                 <>
                   <p><strong>Bác sĩ:</strong> {item.doctor_name}</p>
@@ -313,7 +312,7 @@ export const Header = () => {
                   <p><strong>Thời gian:</strong> {item.start_time}</p>
                   <p><strong>Phòng khám:</strong> {item.clinic_location}</p>
                   <p style={{ fontStyle: 'italic', color: 'gray' }}>
-                    ( Thông báo từ Lễ tân )
+                    ( Thông báo từ Bác sĩ )
                   </p>
                 </>
               );
@@ -462,17 +461,9 @@ export const Header = () => {
                 onMouseEnter={() => setAppointmentMenuOpen(true)}
                 onMouseLeave={() => setAppointmentMenuOpen(false)}
               >
-                <span className='textcolor'>Quản lý lịch hẹn</span>
-                {appointmentMenuOpen && (
-                  <ul className='dropdownMenu'>
                     <li>
-                      <Link to="/lich-hen-benh-nhan">Lịch hẹn của bệnh nhân</Link>
+                      <Link to="/lich-hen-benh-nhan">Lịch hẹn bệnh nhân</Link>
                     </li>
-                    <li>
-                      <Link to="/lich-lam-viec-bac-si">Lịch làm việc của bác sĩ</Link>
-                    </li>
-                  </ul>
-                )}
               </li>
               <li>
                 <Link to="/thanh-toan">Thanh toán</Link>
