@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Nhập CSS styles
 import { AuthContext } from '../../context/AuthContext';
@@ -7,7 +7,6 @@ import './Login.css';
 import axiosClient from '../../axiosClient';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Nhập icon con mắt
 import { Puff } from 'react-loader-spinner'; 
-
 const Login = () => {
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
@@ -15,7 +14,6 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false); // Trạng thái hiển thị mật khẩu
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -51,7 +49,6 @@ const Login = () => {
       }
     }
   };
-
   // Nếu đang loading, hiển thị spinner
   if (loading) {
     return (
@@ -66,7 +63,6 @@ const Login = () => {
       </div>
     );
   }
-
   return (
     <div className="login-container">
       <div className="login-form">
@@ -83,7 +79,6 @@ const Login = () => {
               required
             />
           </div>
-
           <div className="form-group">
             <label htmlFor="password">Mật khẩu</label>
             <div className="password-input-container">
@@ -105,12 +100,11 @@ const Login = () => {
               </button>
             </div>
           </div>
-
           <button type="submit" className="login-button">Đăng nhập</button>
         </form>
-
         <div className="register-link">
-          <p>Chưa có tài khoản? <a href="/register">Đăng ký ngay</a></p>
+          <p>Chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
+          </p>
         </div>
       </div>
     </div>

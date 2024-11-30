@@ -2,14 +2,14 @@ import React, { useEffect, useState, useContext } from 'react';
 import axiosClient from '../../axiosClient';
 import DATA from '../../assets/icons/no-data.png';
 import APPOINTMENT from '../../assets/icons/appointment.png';
-import Close from '../../assets/icons/arrow.png';
 import Info from '../../assets/icons/info.png';
 import './doctor_appointment.css';
 import { Puff } from 'react-loader-spinner';
 import { AuthContext } from '../../context/AuthContext';
-import { Input, Checkbox, Form, Popconfirm } from 'antd';
+import { Input, Checkbox, Form, Popconfirm, Modal } from 'antd';
 import { toast } from 'react-toastify';
 const DoctorAppointments = () => {
+
   const { user_id } = useContext(AuthContext);
   const [lichKham, setLichKham] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,13 +19,14 @@ const DoctorAppointments = () => {
   const [status_step, setStatusStep] = useState(false); // State cho thời gian đặt lịch
   const [showTestFields, setShowTestFields] = useState(false);
   const [showContinueFields, setShowContinueFields] = useState(false);
+  const [image, setImage] = useState(null);
   const [medical_record, setMedicalRecord] = useState([]);
   const [appointment_id, setAppointmentId] = useState(null);
   const [customEndTime, setCustomEndTime] = useState(''); // State cho thời gian đặt lịch
   const [data, setDoctors] = useState([]); // State cho danh sách bác sĩ
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [SelectedAppointmentDetail, setSelectedAppointmentDetail] = useState(null); // Trạng thái cho modal
-  const [BooleantDetail, SelectBooleantDetail] = useState(false); 
+  const [BooleantDetail, SelectBooleantDetail] = useState(false);
   // Danh sách khoa
   const departments = [
     'Khoa Nội', 'Khoa Ngoại', 'Khoa Sản', 'Khoa Nhi', 'Khoa Da Liễu',
@@ -186,6 +187,15 @@ const DoctorAppointments = () => {
   const handleConfirmClick = async () => {
     setAppointmentId(selectedAppointment.id)
     if (selectedAppointment.confirmed_by_doctor_id === user_id && !status_step) {
+      setLoading(true);
+      if (!image) {
+        Modal.error({
+          title: 'Lỗi',
+          content: 'Vui lòng chọn ảnh để tiếp tục.',
+        });
+        setLoading(false); // Dừng loading nếu không có ảnh
+        return; // Dừng hàm nếu không có ảnh
+      }
       CreateMedical()
       updateAppointmentEndTime(); // This will confirm the appointment
       toast.success('Hồ sơ bệnh án đã được tạo thành công!');
@@ -220,7 +230,7 @@ const DoctorAppointments = () => {
       setLoading(false);
     }
   };
-  
+
 
   // Hàm xử lý khi nhấn "Tạo lịch khám"
   const handleCreateNewAppointment = () => {
@@ -265,21 +275,30 @@ const DoctorAppointments = () => {
   };
 
   const CreateMedical = async () => {
-    setLoading(true);
     try {
-      const response = await axiosClient.post('/medical-record', {
-        appointment_id: selectedAppointment.id,
-        patient_id: selectedAppointment.patient_id,
-        doctor_id: user_id,
+      // Tạo FormData để gửi ảnh cùng dữ liệu
+      const formData = new FormData();
+      formData.append('file', image); // Thêm ảnh vào FormData
+
+      // Thêm các thông tin khác vào formData
+      formData.append('appointment_id', selectedAppointment.id);
+      formData.append('patient_id', selectedAppointment.patient_id);
+      formData.append('doctor_id', user_id);
+      // Gửi dữ liệu lên backend
+      const response = await axiosClient.post('/medical-record', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       setMedicalRecord(response.data);
     } catch (err) {
-      setError('Có lỗi xảy ra khi lấy dữ liệu.');
+      setError('Có lỗi xảy ra khi tạo bệnh án.');
     } finally {
       setLoading(false);
     }
   };
+
 
   const updateAppointmentEndTime = async () => {
     setStatusStep(true)
@@ -320,6 +339,9 @@ const DoctorAppointments = () => {
     SelectBooleantDetail(false)
 
   };
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
 
 
   const handlePopConfirmRender = () => {
@@ -337,7 +359,12 @@ const DoctorAppointments = () => {
         visible={!!selectedAppointment}
         description={
           selectedAppointment.confirmed_by_doctor_id === user_id && !status_step ? (
-            <div></div>
+            <div>
+              <h2>Upload Image</h2>
+              <form>
+                <input type="file" onChange={handleImageChange} />
+              </form>
+            </div>
           ) : (
             <div>
               <Form>
@@ -525,10 +552,10 @@ const DoctorAppointments = () => {
               <strong>Thời gian kết thúc: </strong>
               <input type="text" value={formatTimeTo12Hour(calculateEndTime())} className="staticInput" readOnly />
             </p>
-            <div style={{display: 'flex', justifyContent: 'center'}}>
-            <button onClick={UpdateAppointmentOther} className="confirmButton">
-              <span style={{ fontFamily: 'monospace', fontSize: '16px', color: 'green' }}>Confirm</span>
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button onClick={UpdateAppointmentOther} className="confirmButton">
+                <span style={{ fontFamily: 'monospace', fontSize: '16px', color: 'green' }}>Confirm</span>
+              </button>
             </div>
           </div>
         </div>

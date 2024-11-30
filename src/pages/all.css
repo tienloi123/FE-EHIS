@@ -104,8 +104,8 @@ video {
 }
 
 .cta-button:hover {
-    color: #ffffff;
-    background: rgb(251, 44, 123);
+  color: #ffffff;
+  background: rgb(251, 44, 123);
 }
 
 /* Back to Top Button */
@@ -117,11 +117,16 @@ video {
 }
 
 .scroll-button {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 12px 20px;
   background-color: #2196F3;
   color: white;
   border: none;
-  border-radius: 40%;
+  border-radius: 50%;
   cursor: pointer;
   font-size: 1em;
   transition: background-color 0.3s ease;
@@ -130,11 +135,13 @@ video {
 .scroll-button:hover {
   background-color: #0b7dda;
 }
+
 .imageFooter {
   padding-top: 20px;
   width: 100%;
   max-width: 1200px;
-  height: auto; /* Để ảnh giữ tỷ lệ gốc */
+  height: auto;
+  /* Để ảnh giữ tỷ lệ gốc */
   display: block;
   margin: 0 auto;
   border-radius: 8px;

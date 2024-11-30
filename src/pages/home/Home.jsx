@@ -67,7 +67,7 @@ const Home = () => {
       </section>
 
       {scrollTopVisible && (
-        <div className='scroll-to-top'>
+        <div className='scroll-to-top' style={{alignItems:"center"}}>
           <button onClick={scrollToTop} className='scroll-button'>
             <i className="fas fa-chevron-up"></i>
           </button>

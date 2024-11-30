@@ -6,7 +6,7 @@
   position: sticky;
   top: 0;
   background: white;
-  z-index: 9999999;
+  z-index: 10;
 }
 
 .logoHeader {
@@ -15,8 +15,9 @@
 }
 
 .logo1 {
-  height: 80px;
-  width: 200px;
+  height: 70px;
+  width: 180px;
+  margin-left: 90px;
 }
 
 .menuHeader {
@@ -75,7 +76,7 @@
 .LoginButton {
   color: #ffffff;
   text-decoration: none;
-  margin-top: 15px;
+  margin-bottom: 15px;
   width: 150px;
   height: 40px;
   background: #4CAF50;

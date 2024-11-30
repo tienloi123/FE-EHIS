@@ -12,6 +12,10 @@ import GetAppointment from './pages/get_appointment/appointment';
 import SetAppointment from './pages/create_appointment/appointment';
 import DoctorAppointments from './pages/doctor_appointment/doctor_appointment';
 import PaymentPage from './pages/payment/payment';
+import UserPaymentPage from './pages/user_payment/user_payment';
+import PaymentSuccessPage from './pages/payment-success/payment_success';
+import Settings from './components/header/Settings';
+import VerifyImage from './pages/auth/LoginFace';
 
 export const mainRouters = [
   {
@@ -57,6 +61,26 @@ export const mainRouters = [
   {
     path: '/thanh-toan',
     component: PaymentPage,
+    layout: MainLayout,
+  },
+  {
+    path: '/thanh-toan-nguoi-dung',
+    component: UserPaymentPage,
+    layout: MainLayout,
+  },
+  {
+    path: '/thanh-toan-thanh-cong',  // Route trang thanh toán thành công
+    component: PaymentSuccessPage,
+    layout: MainLayout,
+  },
+  {
+    path: '/settings',  // Route trang thanh toán thành công
+    component: Settings,
+    layout: MainLayout,
+  },
+  {
+    path: '/login-face',  // Route trang thanh toán thành công
+    component: VerifyImage,
     layout: MainLayout,
   }
 ];

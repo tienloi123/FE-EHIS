@@ -7,45 +7,62 @@ import './Register.css';
 
 const Register = () => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [cccdId, setCccdId] = useState('');
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
-  const [department, setDepartment] = useState('');
   const [gender, setGender] = useState('');
+  const [residence, setResidence] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [clinicLocation, setClinicLocation] = useState('');
+  const [isScanned, setIsScanned] = useState(false); // Trạng thái đã quét QR
   const navigate = useNavigate();
 
-  const departments = [
-    'Khoa Nội', 'Khoa Ngoại', 'Khoa Sản', 'Khoa Nhi', 'Khoa Da Liễu',
-    'Khoa Mắt', 'Khoa Tai Mũi Họng', 'Khoa Răng Hàm Mặt',
-    'Khoa Chẩn Đoán Hình Ảnh', 'Khoa Cấp Cứu'
-  ]; // Danh sách 10 khoa
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  const handleRoleChange = (event) => {
-    setRole(event.target.value);
-    if (event.target.value !== 'Doctor') {
-      setDepartment('');
-      setClinicLocation('');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      setLoading(true);
+      const response = await axiosClient.post('/qrcode/scan-qrcode/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const data = response.data;
+      setCccdId(data.cccd_id);
+      setName(data.full_name);
+      setDob(data.dob);
+      setGender(data.gender);
+      setResidence(data.residence);
+
+      setIsScanned(true); // Đặt trạng thái đã quét thành true
+      toast.success('Quét thông tin thành công!', { position: 'top-right' });
+    } catch (error) {
+      toast.error('Không thể quét thông tin. Vui lòng thử lại.', { position: 'top-right' });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+
     try {
       await axiosClient.post('auth/register', {
         email,
-        name,
-        dob: new Date(dob).toLocaleDateString('vi-VN'),
         password,
-        role,
-        clinic_location: role === 'Doctor' ? clinicLocation : null,
-        department: role === 'Doctor' ? department : null,
+        role: 'Patient', // Vai trò cố định
+        cccd_id: cccdId,
+        name,
+        dob,
         gender,
+        residence,
       });
+
       navigate('/login', {
         state: {
           notify: {
@@ -56,7 +73,7 @@ const Register = () => {
       });
     } catch (error) {
       const message = error.response?.data?.detail?.message || 'Có lỗi xảy ra. Vui lòng thử lại.';
-      toast.error(message, { position: "top-right" });
+      toast.error(message, { position: 'top-right' });
     } finally {
       setLoading(false);
     }
@@ -67,119 +84,120 @@ const Register = () => {
       <div className="register-form">
         <h2>Đăng ký tài khoản</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Nhập Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="name">Họ và tên</label>
-            <input
-              type="text"
-              id="name"
-              placeholder="Nhập Họ và Tên"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="dob">Ngày sinh</label>
-            <input
-              type="date"
-              id="dob"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="gender">Giới tính</label>
-            <select
-              id="gender"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              required
-            >
-              <option value="">Chọn giới tính</option>
-              <option value="Nam">Nam</option>
-              <option value="Nữ">Nữ</option>
-              <option value="Khác">Khác</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Mật khẩu</label>
-            <div className="password-container">
+          {/* Nút chọn ảnh khi chưa quét QR */}
+          {!isScanned && (
+            <div className="form-group">
+              <label htmlFor="file-upload">Quét mã QR CCCD</label>
               <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                placeholder="Nhập mật khẩu"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                type="file"
+                id="file-upload"
+                accept="image/*"
+                onChange={handleFileUpload}
+                disabled={loading}
               />
-              <span
-                className="toggle-password"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
+              <button type="submit" className="register-button" disabled={loading || !isScanned}>
+                {loading ? 'Đang quét mã...' : 'Quét mã căn cước'}
+              </button>
             </div>
-          </div>
+          )}
 
-          <div className="form-group">
-            <label htmlFor="role">Vai trò</label>
-            <select id="role" value={role} onChange={handleRoleChange} required>
-              <option value="">Chọn vai trò</option>
-              <option value="Doctor">Bác sĩ</option>
-              <option value="Receptionist">Lễ tân</option>
-              <option value="Patient">Bệnh nhân</option>
-            </select>
-          </div>
-
-          {role === 'Doctor' && (
+          {/* Các trường thông tin tự động điền khi đã quét QR */}
+          {isScanned && (
             <>
               <div className="form-group">
-                <label htmlFor="department">Khoa</label>
-                <select
-                  id="department"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  required
-                >
-                  <option value="">Chọn khoa</option>
-                  {departments.map((dept, index) => (
-                    <option key={index} value={dept}>{dept}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="clinicLocation">Vị trí phòng khám</label>
+                <label htmlFor="cccdId">Số CCCD</label>
                 <input
                   type="text"
-                  id="clinicLocation"
-                  value={clinicLocation}
-                  onChange={(e) => setClinicLocation(e.target.value)}
-                  placeholder="Nhập vị trí phòng khám"
+                  id="cccdId"
+                  value={cccdId}
+                  disabled
+                  placeholder="Số CCCD sẽ được điền tự động"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="name">Họ và tên</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  disabled
+                  placeholder="Họ và tên sẽ được điền tự động"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="dob">Ngày sinh</label>
+                <input
+                  type="text"
+                  id="dob"
+                  value={dob}
+                  disabled
+                  placeholder="Ngày sinh sẽ được điền tự động"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="gender">Giới tính</label>
+                <input
+                  type="text"
+                  id="gender"
+                  value={gender}
+                  disabled
+                  placeholder="Giới tính sẽ được điền tự động"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="residence">Nơi cư trú</label>
+                <input
+                  type="text"
+                  id="residence"
+                  value={residence}
+                  disabled
+                  placeholder="Nơi cư trú sẽ được điền tự động"
+                />
+              </div>
+              {/* Trường nhập email */}
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Nhập email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
+
+              {/* Trường nhập mật khẩu */}
+              <div className="form-group">
+                <label htmlFor="password">Mật khẩu</label>
+                <div className="password-container">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    placeholder="Nhập mật khẩu"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <span
+                    className="toggle-password"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+              </div>
+
+              {/* Nút đăng ký */}
+              <button type="submit" className="register-button" disabled={loading || !isScanned}>
+                {loading ? 'Đang đăng ký...' : 'Đăng ký'}
+              </button>
             </>
           )}
-
-          <button type="submit" className="register-button" disabled={loading}>
-            {loading ? 'Đang đăng ký...' : 'Đăng ký'}
-          </button>
         </form>
 
         <div className="login-link">

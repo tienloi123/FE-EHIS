@@ -171,8 +171,12 @@ export const Header = () => {
                 ? 'Chưa thanh toán'
                 : data.status_payment === 'COMPLETED'
                   ? 'Thành công'
-                  : 'Thanh toán lỗi'}
-              </p>
+                  : 'Thanh toán lỗi'
+              }</p>
+            </>
+          ) : data.title === 'Thông báo thanh toán thành công' ? (
+            <>
+              <p>{data.description}</p>
             </>
           ) : (
             <>
@@ -183,12 +187,12 @@ export const Header = () => {
             </>
           )}
         </div>,
-
         {
           position: 'bottom-left',
           autoClose: 10000,
         }
       );
+      
 
 
       // Đẩy thông báo lên trình duyệt với thiết kế hợp lý
@@ -219,6 +223,10 @@ export const Header = () => {
                   ? 'Thành công'
                   : 'Thanh toán lỗi'
               }`;
+            break;
+          case 'Thông báo thanh toán thành công':
+            notificationOptions.body = `💰${data.description || 'Không xác định'}.\n` +
+              `🎉 Trạng thái: Thành công`;
             break;
           case 'Thông báo lịch hẹn mới.':
             notificationOptions.body = `🩺 Bác sĩ: ${data.doctor?.name || 'Không xác định'}\n` +
@@ -359,6 +367,17 @@ export const Header = () => {
                 </p>
               );
               break;
+            
+              case 'Thông báo thanh toán thành công':
+              itemDetails = (
+                <p>
+                  {item.description}
+                  <p style={{ fontStyle: 'italic', color: 'gray' }}>
+                    ( Thông báo từ Bệnh nhân )
+                  </p>
+                </p>
+              );
+              break;
 
             default:
               itemDetails = <p>{item.description}</p>;
@@ -411,8 +430,9 @@ export const Header = () => {
 
 
   return (
-    <div className='containerHeader'>
-      <ToastNotify />
+    <>
+        <ToastNotify />
+      <div className='containerHeader'>
       <div className='logoHeader'>
         <Link to="/">
           <img src="./images/logo.png" alt="logo" className='logo1' />
@@ -420,10 +440,9 @@ export const Header = () => {
       </div>
       <div className='menuHeader'>
         <ul className='menuLi'>
-          <li><Link to="/">Trang chủ</Link></li>
-
           {role === 'Patient' ? (
             <>
+          <li><Link to="/">Trang chủ</Link></li>
               <li
                 className='bookingMenu'
                 onMouseEnter={() => setBookingMenuOpen(true)}
@@ -446,16 +465,18 @@ export const Header = () => {
                 )}
               </li>
               <li>
-                <Link to="/ho-so-benh-an" onClick={(e) => handleProtectedLink(e, '/ho-so-benh-an')}>
-                  Hồ Sơ Bệnh Án
+                <Link to="/thanh-toan-nguoi-dung" onClick={(e) => handleProtectedLink(e, '/ho-so-benh-an')}>
+                  Thanh toán
                 </Link>
               </li>
+              
               <li>
                 <Link to="/tin-tuc">Tin tức</Link>
               </li>
             </>
           ) : role === 'Receptionist' ? (
             <>
+          <li><Link to="/">Trang chủ</Link></li>
               <li
                 className='bookingMenu'
                 onMouseEnter={() => setAppointmentMenuOpen(true)}
@@ -471,6 +492,7 @@ export const Header = () => {
             </>
           ) : role === 'Doctor' && (
             <>
+          <li><Link to="/">Trang chủ</Link></li>
               <li>
                 <Link to="/lich-hen-bac-si">Xem lịch hẹn</Link>
               </li>
@@ -531,6 +553,7 @@ export const Header = () => {
         <Link className='LoginLink' to="/login"><div className='LoginButton'>Đăng nhập</div></Link>
       )}
     </div>
+    </>
   );
 };
 
