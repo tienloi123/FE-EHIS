@@ -20,7 +20,6 @@ const DoctorAppointments = () => {
   const [showTestFields, setShowTestFields] = useState(false);
   const [showContinueFields, setShowContinueFields] = useState(false);
   const [image, setImage] = useState(null);
-  const [medical_record, setMedicalRecord] = useState([]);
   const [appointment_id, setAppointmentId] = useState(null);
   const [customEndTime, setCustomEndTime] = useState(''); // State cho thời gian đặt lịch
   const [data, setDoctors] = useState([]); // State cho danh sách bác sĩ
@@ -285,13 +284,12 @@ const DoctorAppointments = () => {
       formData.append('patient_id', selectedAppointment.patient_id);
       formData.append('doctor_id', user_id);
       // Gửi dữ liệu lên backend
-      const response = await axiosClient.post('/medical-record', formData, {
+      await axiosClient.post('/medical-record', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      setMedicalRecord(response.data);
     } catch (err) {
       setError('Có lỗi xảy ra khi tạo bệnh án.');
     } finally {

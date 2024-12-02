@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, {useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import axiosClient from '../../axiosClient';
+import { Input, Button, Modal, message} from 'antd';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+
 import './Register.css';
 
 const Register = () => {
@@ -17,7 +21,11 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isScanned, setIsScanned] = useState(false); // Trạng thái đã quét QR
   const navigate = useNavigate();
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [user_id, setUser_id] = useState('');
+  const [step, setStep] = useState(1); // Step 1: Send OTP, Step 2: Verify OTP, Step 3: Enter new password
+  const customIcon = <LoadingOutlined style={{ fontSize: 36, color: '#1890ff' }} spin />;
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -46,13 +54,49 @@ const Register = () => {
       setLoading(false);
     }
   };
+  const verifyOtp = async () => {
+    try {
+      await axiosClient.post('/auth/register-verify-otp', { otp , user_id});
+      handleNavigate()
+    } catch (error) {
+      message.error('OTP không hợp lệ hoặc đã hết hạn.');
+      console.error(error);
+    }
+  };
+  const showPasswordModal = async (user_id) => {
+    await sendOtp(user_id)
+    setIsModalVisible(true);
+
+  };
+  // Gửi mã OTP
+  const sendOtp = async (user_id) => {
+    try {
+      setUser_id(user_id)
+      // Giả sử backend gửi OTP qua email
+      await axiosClient.post('/auth/register-send-otp', {
+        user_id: user_id
+      })
+      message.info('OTP đã được gửi đến email của bạn.');
+    } catch (error) {
+      message.error('Không thể gửi OTP. Vui lòng thử lại!');
+      console.error(error);
+    }
+  };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    resetModalState();
+  };
+  const resetModalState = () => {
+    setStep(1);
+    setOtp('');
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
 
     try {
-      await axiosClient.post('auth/register', {
+      const response = await axiosClient.post('auth/register', {
         email,
         password,
         role: 'Patient', // Vai trò cố định
@@ -62,15 +106,8 @@ const Register = () => {
         gender,
         residence,
       });
-
-      navigate('/login', {
-        state: {
-          notify: {
-            type: 'success',
-            message: 'Đăng ký thành công',
-          },
-        },
-      });
+      console.log(response)
+      await showPasswordModal(parseInt(response.data.id, 10))
     } catch (error) {
       const message = error.response?.data?.detail?.message || 'Có lỗi xảy ra. Vui lòng thử lại.';
       toast.error(message, { position: 'top-right' });
@@ -78,12 +115,24 @@ const Register = () => {
       setLoading(false);
     }
   };
+  const handleNavigate = () => {
+    navigate('/login', {
+      state: {
+        notify: {
+          type: 'success',
+          message: 'Đăng ký thành công',
+        },
+      },
+    });
+  }
 
   return (
     <div className="register-container">
+       {/* Bọc toàn bộ giao diện bằng Spin */}
+    <Spin spinning={loading} tip="Đang xử lý..." indicator={customIcon} size="large">
       <div className="register-form">
         <h2>Đăng ký tài khoản</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>  
           {/* Nút chọn ảnh khi chưa quét QR */}
           {!isScanned && (
             <div className="form-group">
@@ -204,6 +253,35 @@ const Register = () => {
           <p>Bạn đã có tài khoản? <a href="/login">Đăng nhập ngay</a></p>
         </div>
       </div>
+      </Spin>
+      <Modal
+        title={step === 1 ? 'Xác thực OTP' : 'Nhập mật khẩu mới'}
+        open={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        centered
+        styles={{ body: { backgroundColor: '#f7f7f7', padding: '20px', borderRadius: '10px' } }}
+      >
+        {step === 1 && (
+          <div className="otp-verification-form">
+            <Input.OTP length={6} value={otp} onChange={(value) => setOtp(value)} />
+            <Button
+              type="primary"
+              onClick={verifyOtp}
+              style={{
+                backgroundColor: '#52c41a',
+                borderColor: '#52c41a',
+                width: '100%',
+                fontSize: '16px',
+                padding: '12px',
+              }}
+              disabled={otp.length !== 6}
+            >
+              Xác thực OTP
+            </Button>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

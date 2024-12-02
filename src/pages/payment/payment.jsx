@@ -13,8 +13,6 @@ const PaymentPage = () => {
     total: 0,
   });
   const [filterType, setFilterType] = useState("PENDING");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const { Panel } = Collapse;
 
   const fetchPayments = useCallback(async (page, pageSize, filter) => {
@@ -57,7 +55,8 @@ const PaymentPage = () => {
   // Gọi API khi trang hoặc filterType thay đổi
   useEffect(() => {
     fetchPayments(pagination.current, pagination.pageSize, filterType);
-  }, [filterType, pagination.current, pagination.pageSize, fetchPayments]);
+  }, [filterType, pagination, fetchPayments]);  // Thêm 'pagination' vào mảng phụ thuộc
+
 
   const columns = [
     {
@@ -135,10 +134,8 @@ const PaymentPage = () => {
       toast.success('Thanh toán thành công')
       refreshData();
     } catch (err) {
-      setError('Có lỗi xảy ra khi lấy dữ liệu.');
       toast.error("Có lỗi xảy ra khi kết thúc lịch khám.");
     } finally {
-      setLoading(false);
     }
   };
   const refreshData = () => {
@@ -177,14 +174,14 @@ const PaymentPage = () => {
 
           {/* Phần thông tin bác sĩ và khám */}
           <div className="doctor-info">
-            <p><strong>Tên bác sĩ:</strong> {record.doctor_name}</p>
-            <p><strong>Ngày khám:</strong> {record.visit_date ? new Date(record.visit_date).toLocaleDateString('en-GB') : "N/A"}</p>
+            <p  style={{ textAlign: "left" }}><strong>Tên bác sĩ:</strong> {record.doctor_name}</p>
+            <p  style={{ textAlign: "left" }}><strong>Ngày khám:</strong> {record.visit_date ? new Date(record.visit_date).toLocaleDateString('en-GB') : "N/A"}</p>
           </div>
 
           {/* Phần thông tin thanh toán */}
           <div className="payment-info">
-            <p><strong>Số tiền:</strong> {record.payment_amount.toLocaleString()} VNĐ</p>
-            <p><strong>Trạng thái:</strong>
+            <p  style={{ textAlign: "left" }}><strong>Số tiền:</strong> {record.payment_amount.toLocaleString()} VNĐ</p>
+            <p  style={{ textAlign: "left", marginTop:"10px"  }} ><strong>Trạng thái:</strong>
               <Tag
                 color={
                   record.payment_status === "COMPLETED"
@@ -201,7 +198,7 @@ const PaymentPage = () => {
                     : "Thanh toán lỗi"}
               </Tag>
             </p>
-            <p>
+            <p  style={{ textAlign: "left", marginTop:"10px" }}>
               <strong>Thời gian thanh toán: </strong>
               {record.payment_date
                 ? (() => {
@@ -221,14 +218,14 @@ const PaymentPage = () => {
               {record.medical_record_doctors && record.medical_record_doctors.length > 0 ? (
                 record.medical_record_doctors.map((doctorDetail, index) => (
                   <Panel header={`Lần khám ${index + 1}`} key={index}>
-                    <p><strong>Chuẩn đoán:</strong> {doctorDetail.diagnosis || "N/A"}</p>
-                    <p><strong>Đơn thuốc:</strong> {doctorDetail.prescription || "N/A"}</p>
-                    <p><strong>Số tiền:</strong> {doctorDetail.payment_amount.toLocaleString()} VNĐ</p>
+                    <p style={{ textAlign: "left" }}><strong>Chuẩn đoán:</strong> {doctorDetail.diagnosis || "N/A"}</p>
+                    <p style={{ textAlign: "left" }}><strong>Đơn thuốc:</strong> {doctorDetail.prescription || "N/A"}</p>
+                    <p style={{ textAlign: "left" }}><strong>Số tiền:</strong> {doctorDetail.payment_amount.toLocaleString()} VNĐ</p>
                     {doctorDetail.lab_test_name && (
                       <>
-                        <p><strong>Tên xét nghiệm:</strong> {doctorDetail.lab_test_name}</p>
-                        <p><strong>Kết quả xét nghiệm:</strong> {doctorDetail.lab_test_result}</p>
-                        <p><strong>Ngày xét nghiệm: </strong>
+                        <p style={{ textAlign: "left" }}><strong>Tên xét nghiệm:</strong> {doctorDetail.lab_test_name}</p>
+                        <p style={{ textAlign: "left" }}><strong>Kết quả xét nghiệm:</strong> {doctorDetail.lab_test_result}</p>
+                        <p style={{ textAlign: "left" }}><strong>Ngày xét nghiệm: </strong>
                           {doctorDetail.test_date
                             ? new Date(doctorDetail.test_date).toLocaleDateString('en-GB')
                             : "Chưa có ngày xét nghiệm"}
@@ -246,6 +243,14 @@ const PaymentPage = () => {
         </div>
       ),
       onOk() { },
+      okText: "Đồng ý", // Bạn có thể thay đổi nội dung nút Ok nếu muốn
+      okButtonProps: {
+        style: {
+          backgroundColor: "#1890ff", // Màu nền
+          borderColor: "#1890ff", // Màu viền
+          color: "#fff", // Màu chữ
+        },
+      },
     });
   };
 

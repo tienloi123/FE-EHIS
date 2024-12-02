@@ -18,7 +18,6 @@ export const Header = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingMenuOpen, setBookingMenuOpen] = useState(false);
-  const [appointmentMenuOpen, setAppointmentMenuOpen] = useState(false);
   const [messageCount, setMessageCount] = useState(0);  // Số lượng thông báo
   const [notifications, setNotifications] = useState([]); // Danh sách thông báo
   const [expandedNotification, setExpandedNotification] = useState(null);
@@ -479,8 +478,6 @@ export const Header = () => {
           <li><Link to="/">Trang chủ</Link></li>
               <li
                 className='bookingMenu'
-                onMouseEnter={() => setAppointmentMenuOpen(true)}
-                onMouseLeave={() => setAppointmentMenuOpen(false)}
               >
                     <li>
                       <Link to="/lich-hen-benh-nhan">Lịch hẹn bệnh nhân</Link>

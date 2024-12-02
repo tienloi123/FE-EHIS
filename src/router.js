@@ -15,7 +15,6 @@ import PaymentPage from './pages/payment/payment';
 import UserPaymentPage from './pages/user_payment/user_payment';
 import PaymentSuccessPage from './pages/payment-success/payment_success';
 import Settings from './components/header/Settings';
-import VerifyImage from './pages/auth/LoginFace';
 
 export const mainRouters = [
   {
@@ -78,11 +77,6 @@ export const mainRouters = [
     component: Settings,
     layout: MainLayout,
   },
-  {
-    path: '/login-face',  // Route trang thanh toán thành công
-    component: VerifyImage,
-    layout: MainLayout,
-  }
 ];
 
 const App = () => {

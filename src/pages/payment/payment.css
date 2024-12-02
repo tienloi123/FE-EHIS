@@ -96,3 +96,12 @@
     bottom: 80px; 
     right: 100px;
   }
+.ant-modal-footer .ant-btn-primary {
+  background-color: #1890ff !important; 
+  border-color: #1890ff !important; 
+}
+
+.ant-modal-footer .ant-btn-primary:hover {
+  background-color: #40a9ff !important;
+  border-color: #40a9ff !important;
+}
