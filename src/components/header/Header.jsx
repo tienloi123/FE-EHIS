@@ -13,6 +13,7 @@ import { Popover, Badge, Segmented, Button, Tooltip, List } from 'antd';
 import Pusher from 'pusher-js';
 import MarkAsRead from '../../assets/icons/mark-all-as-read.png';
 
+
 export const Header = () => {
   const { isLoggedIn, logout, role, user, user_id } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export const Header = () => {
   const [messageCount, setMessageCount] = useState(0);  // Số lượng thông báo
   const [notifications, setNotifications] = useState([]); // Danh sách thông báo
   const [expandedNotification, setExpandedNotification] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // Khởi tạo state
 
 
   const fetchNotifications = useCallback(async () => {
@@ -191,7 +193,7 @@ export const Header = () => {
           autoClose: 10000,
         }
       );
-      
+
 
 
       // Đẩy thông báo lên trình duyệt với thiết kế hợp lý
@@ -366,8 +368,8 @@ export const Header = () => {
                 </p>
               );
               break;
-            
-              case 'Thông báo thanh toán thành công':
+
+            case 'Thông báo thanh toán thành công':
               itemDetails = (
                 <p>
                   {item.description}
@@ -430,126 +432,245 @@ export const Header = () => {
 
   return (
     <>
-        <ToastNotify />
+      <ToastNotify />
       <div className='containerHeader'>
-      <div className='logoHeader'>
-        <Link to="/">
-          <img src="./images/logo.png" alt="logo" className='logo1' />
-        </Link>
-      </div>
-      <div className='menuHeader'>
-        <ul className='menuLi'>
-          {role === 'Patient' ? (
-            <>
-          <li><Link to="/">Trang chủ</Link></li>
-              <li
-                className='bookingMenu'
-                onMouseEnter={() => setBookingMenuOpen(true)}
-                onMouseLeave={() => setBookingMenuOpen(false)}
-              >
-                <span className='textcolor'>Khám bệnh</span>
-                {bookingMenuOpen && (
-                  <ul className='dropdownMenu'>
-                    <li>
-                      <Link to="/dat-lich-kham" onClick={(e) => handleProtectedLink(e, '/dat-lich-kham')}>
-                        Đặt lịch khám
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/xem-lich-kham" onClick={(e) => handleProtectedLink(e, '/lich-kham-cua-toi')}>
-                        Xem lịch khám
-                      </Link>
-                    </li>
-                  </ul>
-                )}
-              </li>
-              <li>
-                <Link to="/thanh-toan-nguoi-dung" onClick={(e) => handleProtectedLink(e, '/ho-so-benh-an')}>
-                  Thanh toán
-                </Link>
-              </li>
-              
-              <li>
-                <Link to="/tin-tuc">Tin tức</Link>
-              </li>
-            </>
-          ) : role === 'Receptionist' ? (
-            <>
-          <li><Link to="/">Trang chủ</Link></li>
-              <li
-                className='bookingMenu'
-              >
-                    <li>
-                      <Link to="/lich-hen-benh-nhan">Lịch hẹn bệnh nhân</Link>
-                    </li>
-              </li>
-              <li>
-                <Link to="/thanh-toan">Thanh toán</Link>
-              </li>
-            </>
-          ) : role === 'Doctor' && (
-            <>
-          <li><Link to="/">Trang chủ</Link></li>
-              <li>
-                <Link to="/lich-hen-bac-si">Xem lịch hẹn</Link>
-              </li>
-            </>
-          )}
+        <div className='logoHeader'>
+          <Link to="/">
+            <img src="./images/logo.png" alt="logo" className='logo1' />
+          </Link>
+        </div>
+        <div className='menuHeader'>
+          <ul className='menuLi'>
+            {role === 'Patient' ? (
+              <>
+                <li><Link to="/">Trang chủ</Link></li>
+                <li
+                  className='bookingMenu'
+                  onMouseEnter={() => setBookingMenuOpen(true)}
+                  onMouseLeave={() => setBookingMenuOpen(false)}
+                >
+                  <span className='textcolor'>Khám bệnh</span>
+                  {bookingMenuOpen && (
+                    <ul className='dropdownMenu'>
+                      <li>
+                        <Link to="/dat-lich-kham" onClick={(e) => handleProtectedLink(e, '/dat-lich-kham')}>
+                          Đặt lịch khám
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/xem-lich-kham" onClick={(e) => handleProtectedLink(e, '/lich-kham-cua-toi')}>
+                          Xem lịch khám
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                </li>
+                <li>
+                  <Link to="/thanh-toan-nguoi-dung" onClick={(e) => handleProtectedLink(e, '/ho-so-benh-an')}>
+                    Thanh toán
+                  </Link>
+                </li>
 
-        </ul>
-      </div>
-
-      {isLoggedIn ? (
-        <div className='userContainer'>
-          <div className='notificationContainer'>
-            {/* Sử dụng Badge để hiển thị số lượng thông báo */}
-
-            <Popover
-              content={content}
-              title={
-                <div className="notification-read-all-wrapper">
-                  <span style={{ fontSize: '20px' }} className="popover-title">
-                    Thông báo
+                <li>
+                  <Link to="/tin-tuc">Tin tức</Link>
+                </li>
+              </>
+            ) : role === 'Receptionist' ? (
+              <>
+                <li><Link to="/">Trang chủ</Link></li>
+                <li
+                  className='bookingMenu'
+                >
+                  <li>
+                    <Link to="/lich-hen-benh-nhan">Lịch hẹn bệnh nhân</Link>
+                  </li>
+                </li>
+                <li>
+                  <Link to="/thanh-toan">Thanh toán</Link>
+                </li>
+              </>
+            ) : role === 'Doctor' && (
+              <>
+                <li><Link to="/">Trang chủ</Link></li>
+                <li>
+                  <Link to="/lich-hen-bac-si">Xem lịch hẹn</Link>
+                </li>
+              </>
+            )}
+            {role === 'Superuser' && (
+              <>
+                <li
+                  className="managementMenu"
+                  style={{
+                    position: 'relative',
+                    display: 'inline-block',
+                    cursor: 'pointer',
+                    padding: '10px',
+                    bottom:'10px',
+                    left: '20px'
+                  }}
+                  onMouseEnter={() => setDropdownOpen(true)}
+                  onMouseLeave={() => setDropdownOpen(false)}
+                >
+                  <span
+                    style={{
+                      color: '#333',
+                      padding: '10px 15px',
+                      display: 'block',
+                    }}
+                  >
+                    Quản lý thành viên
                   </span>
-                  <div className="DivMarkAsRead">
-                    <Tooltip title="Đánh dấu tất cả đã đọc">
-                      <img src={MarkAsRead} alt="Mark as Read" className="MarkAsRead" onClick={markAllAsRead} />
-                    </Tooltip>
-                    <div>
-                      <Segmented
-                        defaultValue='Tất cả'
-                        options={['Tất cả', 'Chưa đọc']}
-                        onChange={handleSegmentChange}
-                      />
+                  {dropdownOpen && (
+                    <ul
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: '0',
+                        backgroundColor: '#fff',
+                        listStyleType: 'none',
+                        margin: 0,
+                        padding: '10px',
+                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                        zIndex: 1000,
+                        width: '208px', // Đảm bảo menu có chiều rộng đủ
+                      }}
+                    >
+                      <li
+                        style={{
+                          padding: '8px 15px',
+                          borderBottom: '1px solid #ddd',
+                        }}
+                      >
+                        <Link
+                          to="/quan-ly-benh-nhan"
+                          style={{
+                            textDecoration: 'none',
+                            color: '#333',
+                            display: 'block',
+                          }}
+                        >
+                          Quản lý bệnh nhân
+                        </Link>
+                      </li>
+                      <li
+                        style={{
+                          padding: '8px 15px',
+                          borderBottom: '1px solid #ddd',
+                        }}
+                      >
+                        <Link
+                          to="/quan-ly-bac-si"
+                          style={{
+                            textDecoration: 'none',
+                            color: '#333',
+                            display: 'block',
+                          }}
+                        >
+                          Quản lý bác sĩ
+                        </Link>
+                      </li>
+                      <li
+                        style={{
+                          padding: '8px 15px',
+                        }}
+                      >
+                        <Link
+                          to="/quan-ly-le-tan"
+                          style={{
+                            textDecoration: 'none',
+                            color: '#333',
+                            display: 'block',
+                          }}
+                        >
+                          Quản lý lễ tân
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                </li>
+                <li>
+                  <Link
+                    to="/bao-cao-thong-ke"
+                    style={{
+                      textDecoration: 'none',
+                      padding: '10px',
+                      color: '#333',
+                      display: 'inline-block',
+                    }}
+                  >
+                    Báo cáo thống kê
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/quan-ly-thanh-toan"
+                    style={{
+                      textDecoration: 'none',
+                      padding: '10px',
+                      color: '#333',
+                      display: 'inline-block',
+                    }}
+                  >
+                    Quản lý thanh toán
+                  </Link>
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
+
+        {isLoggedIn ? (
+          <div className='userContainer'>
+            <div className='notificationContainer'>
+              {/* Sử dụng Badge để hiển thị số lượng thông báo */}
+
+              <Popover
+                content={content}
+                title={
+                  <div className="notification-read-all-wrapper">
+                    <span style={{ fontSize: '20px' }} className="popover-title">
+                      Thông báo
+                    </span>
+                    <div className="DivMarkAsRead">
+                      <Tooltip title="Đánh dấu tất cả đã đọc">
+                        <img src={MarkAsRead} alt="Mark as Read" className="MarkAsRead" onClick={markAllAsRead} />
+                      </Tooltip>
+                      <div>
+                        <Segmented
+                          defaultValue='Tất cả'
+                          options={['Tất cả', 'Chưa đọc']}
+                          onChange={handleSegmentChange}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              }
-              trigger="click"
-            >
+                }
+                trigger="click"
+              >
 
-              <Badge count={messageCount} offset={[-20, 10]}>
-                <img src={bellIcon} alt="" className='bell_icon' />
-              </Badge>
-            </Popover>
-          </div>
-          <div className='user_name'>Xin chào, {user}!</div>
-          <div className='avatarContainer' onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)}>
-            <div className='avatarWrapper'>
-              <img src={Avatar} className='avatar' alt='' />
-              {menuOpen && (
-                <div className='dropdownMenu'>
-                  <Link to="/settings">Cài đặt</Link>
-                  <span onClick={handleLogout}>Đăng xuất</span>
-                </div>
-              )}
+                <Badge count={messageCount} offset={[-20, 10]}>
+                  <img src={bellIcon} alt="" className='bell_icon' />
+                </Badge>
+              </Popover>
+            </div>
+            <div className='user_name'>Xin chào, {user}!</div>
+            <div className='avatarContainer' onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)}>
+              <div className='avatarWrapper'>
+                <img src={Avatar} className='avatar' alt='' />
+                {menuOpen && (
+                  <div className='dropdownMenu'>
+                    <Link to="/settings">Cài đặt</Link>
+                    <span onClick={handleLogout}>Đăng xuất</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <Link className='LoginLink' to="/login"><div className='LoginButton'>Đăng nhập</div></Link>
-      )}
-    </div>
+        ) : (
+          <Link className='LoginLink' to="/login"><div className='LoginButton'>Đăng nhập</div></Link>
+        )}
+      </div>
     </>
   );
 };

@@ -1,0 +1,285 @@
+.lichKhamContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-height: 500px; /* Tăng chiều cao tối thiểu để đảm bảo không bị quá nhỏ */
+  max-height: 100%; /* Đặt chiều cao tối đa phù hợp với màn hình, 100% sẽ linh hoạt */
+}
+
+
+.title {
+  text-align: center;
+}
+
+.lichKhamTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 40px 0;
+}
+
+.lichKhamTable th,
+.lichKhamTable td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.lichKhamTable th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.lichKhamTable tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.lichKhamTable tr:hover {
+  background-color: #ddd;
+}
+
+.loading,
+.error,
+.noData {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.description {
+  width: 20%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.noData {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.title {
+  display: flex;
+  flex-direction: column; /* Căn giữa theo chiều dọc */
+  align-items: center; /* Căn giữa theo chiều ngang */
+  text-align: center; /* Căn giữa văn bản */
+  margin-bottom: 20px; /* Thêm khoảng cách dưới tiêu đề */
+}
+.Detail{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.DetailImage{
+  width: 25x;
+  height: 25px;
+  margin-bottom: -28px;
+  margin-right: 280px;
+}
+.noDataImage {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+.CloseImage{
+  width: 25x;
+  height: 25px;
+  margin-bottom: -8px;
+}
+.appointmenImage
+{
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+.Filter {
+  background: none; /* Không có nền */
+  border: none; /* Không có viền */
+  cursor: pointer; /* Con trỏ chuột dạng tay khi hover */
+  padding: 0; /* Không có padding */
+}
+
+.Filter_Image {
+  margin-left: -40px;
+  margin-bottom: 5px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle; /* Căn giữa theo chiều dọc */
+  margin-right: 5px; /* Khoảng cách giữa hình ảnh và văn bản */
+}
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Chiếm toàn bộ chiều cao của viewport */
+}
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  margin-top: 70px;
+  background: #e8f5e9; /* Light mint green for a clean background */
+  padding: 10px;
+  width: 600px;
+  height: 550px; /* Đặt chiều cao cố định */
+  border-radius: 32px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Soft shadow */
+  position: relative;
+  border: 13px solid #a5d6a7; /* Light green decorative border */
+  border-top: 13px solid #66bb6a; /* Rich green top border for contrast */
+  overflow-y: auto; /* Cho phép thanh cuộn dọc khi nội dung dài */
+  padding-right: 15px; /* Thêm khoảng trống cho thanh cuộn */
+}
+
+.modalContent span {
+  font-size: 1.5rem;
+  color: #333;
+  font-family: monospace;
+  font-weight: bold;
+  text-align: center;
+}
+
+.modalContent p {
+  font-size: 1rem;
+  color: #000000;
+  margin: 8px 0;
+}
+
+.modalContent .doctorSelect, .modalContent .clinicInfo {
+  margin-top: 20px;
+}
+
+.closeButton {
+  width: 30px;
+  margin-top: 5px;
+  padding: 10px 20px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirmButton {
+  width: 110px;
+  margin-top: 5px;
+  padding: 10px 20px;
+  color: #fff;
+  cursor: pointer;
+  border-color: #a5d6a7;
+  transition: background-color 0.3s ease;
+  border-radius: 10px;
+}
+
+.confirmButton:hover {
+  border-color: #07e00e;
+  background: #f0eeee;
+}
+
+.closeModalButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+}
+
+.emptySchedule {
+  text-align: center;
+  font-size: 1rem;
+  color: #999;
+}
+
+/* Style cho modal input */
+.modalContent input[type="text"],
+.modalContent input[type="time"],
+.modalContent select {
+  width: 94%;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border 0.3s ease;
+  margin-top: 10px;
+}
+
+.modalContent input[type="time"]:focus {
+  border-color: #5b9bd5;
+  box-shadow: 0 0 5px rgba(91, 155, 213, 0.5);
+  outline: none;
+}
+
+.modalContent select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 10px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border 0.3s ease;
+}
+
+.modalContent select:focus {
+  border-color: #5b9bd5;
+  box-shadow: 0 0 5px rgba(91, 155, 213, 0.5);
+  outline: none;
+}
+
+/* Style cho button trong modal */
+.closeButton {
+  width: 30px;
+  margin-top: 5px;
+  padding: 10px 20px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.confirmButton{
+width: 110px;
+margin-top: 5px;
+padding: 10px 20px;
+/* border: none; */
+color: #fff;
+cursor: pointer;
+border-color: #a5d6a7;
+transition: background-color 0.3s ease;
+border-radius: 10px;
+}
+.confirmButton:hover{
+border-color: #07e00e;
+background: #f0eeee;
+}
+
+.closeModalButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+}
+

@@ -41,6 +41,8 @@ const Login = () => {
           toast.error('Email hoặc Mật khẩu không hợp lệ.');
         } else if (status === 404 && error.response.data.detail.name === 'NOT_FOUND') {
           toast.error('Email hoặc Mật khẩu không hợp lệ.');
+        } else if (status === 403 && error.response.data.detail.name === 'FORBIDDEN') {
+          toast.error(`${error.response.data.detail.message}`);
         } else {
           toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
         }

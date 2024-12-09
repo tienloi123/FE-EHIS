@@ -117,6 +117,7 @@ const PaymentPage = () => {
             type="primary"
             onClick={() => handleConfirmPayment(record.id)}
             disabled={record.payment_status === "COMPLETED"}
+            className="online-payment-button"
           >
             Xác nhận
           </Button>
@@ -153,7 +154,7 @@ const PaymentPage = () => {
     });
   };
   const viewDetails = (record) => {
-    const imageUrl = `http://localhost:8000/${record.patient_image}`;
+    const imageUrl = `${process.env.REACT_APP_API_URL}/${record.patient_image}`;
 
     Modal.info({
       title: `Chi tiết thanh toán`,

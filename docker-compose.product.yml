@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - traefik_test_general
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`ehis.codelearnit.io.vn`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
+    restart: always
+    env_file:
+      - .env.product
+
+networks:
+  traefik_test_general:
+    external: true

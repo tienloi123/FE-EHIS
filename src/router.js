@@ -15,6 +15,10 @@ import PaymentPage from './pages/payment/payment';
 import UserPaymentPage from './pages/user_payment/user_payment';
 import PaymentSuccessPage from './pages/payment-success/payment_success';
 import Settings from './components/header/Settings';
+import PatientManagement from './pages/superuser/quan-ly-benh-nhan/quanlybenhnhan';
+import ReportPage from './pages/superuser/bao-cao-thong-ke/baocaothongke';
+import AdminPaymentPage from './pages/superuser/bao-cao-thong-ke/chitietthanhtoan';
+import AdminGetAppointment from './pages/superuser/bao-cao-thong-ke/chitietlichhen';
 
 export const mainRouters = [
   {
@@ -75,6 +79,26 @@ export const mainRouters = [
   {
     path: '/settings',  // Route trang thanh toán thành công
     component: Settings,
+    layout: MainLayout,
+  },
+  {
+    path: '/quan-ly-benh-nhan',  // Route trang thanh toán thành công
+    component: PatientManagement,
+    layout: MainLayout,
+  },
+  {
+    path: '/bao-cao-thong-ke',  // Route trang thanh toán thành công
+    component: ReportPage,
+    layout: MainLayout,
+  },
+  {
+    path: '/chi-tiet-thanh-toan',  // Route trang thanh toán thành công
+    component:AdminPaymentPage ,
+    layout: MainLayout,
+  },
+  {
+    path: '/chi-tiet-lich-hen',  // Route trang thanh toán thành công
+    component:AdminGetAppointment ,
     layout: MainLayout,
   },
 ];

@@ -1,0 +1,107 @@
+.payment-page {
+    padding: 20px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+  }
+  
+  .payment-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1890ff;
+    font-size: 30px;
+  }
+  .patient-info {
+    display: flex;
+    align-items: center; /* Canh nội dung ngang hàng */
+    margin-bottom: 20px;
+  }
+  
+  .patient-image {
+    flex: 0 0 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 24px;
+  }
+  
+  .patient-image img {
+    width: 120px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px; /* Bo góc ảnh cho đẹp */
+  }
+  
+  .patient-details {
+    flex: 1;
+    padding-left: 20px;
+  }
+  
+  .patient-details p {
+    margin: 0 0 5px 0; /* Căn lề gọn gàng */
+    line-height: 1.6; /* Tăng chiều cao dòng để dễ đọc */
+  }
+  
+  .payment-info {
+    margin-top: 15px;
+  }
+  
+  .payment-info p {
+    margin: 5px 0;
+  }
+  
+  h4 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px; /* Tạo khoảng cách trước phần tiêu đề */
+  }
+  
+  .ant-modal {
+    max-width: 750px; /* Tăng độ rộng tổng thể của Modal */
+  }
+  
+  .ant-modal-body {
+    padding: 20px; /* Giảm padding của Modal để thông tin không bị "chật" */
+  }
+  
+  .ant-collapse-header {
+    font-weight: bold;
+    background-color: #f5f5f5; /* Màu nền nhẹ cho header */
+  }
+  
+  .ant-modal-centered .ant-modal {
+    top: 0;
+    margin: auto; /* Căn giữa modal */
+  }
+  
+  .payment-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #01c844;
+    font-size: 30px;
+  }
+  
+  .online-payment-button {
+    background-color: #01c844; /* Màu xanh */
+    border-color: #01c844;
+    color: white;
+  }
+  
+  .online-payment-button:disabled {
+    background-color: #d9d9d9; /* Màu khi bị vô hiệu hóa */
+    border-color: #d9d9d9;
+    color: #bfbfbf;
+  }
+  .ant-modal-content{
+    width: 600px;
+    bottom: 80px; 
+    right: 100px;
+  }
+.ant-modal-footer .ant-btn-primary {
+  background-color: #1890ff !important; 
+  border-color: #1890ff !important; 
+}
+
+.ant-modal-footer .ant-btn-primary:hover {
+  background-color: #40a9ff !important;
+  border-color: #40a9ff !important;
+}

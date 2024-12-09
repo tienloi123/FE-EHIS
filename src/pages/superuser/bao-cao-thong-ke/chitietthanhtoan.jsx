@@ -1,51 +1,64 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Tag, Button, Space, Segmented, Pagination, Modal, Collapse } from "antd";
-import "./user_payment.css";
-import axiosClient from "../../axiosClient";
+import { Table, Tag, Button, Space, Segmented, Pagination, Modal, Collapse, message } from "antd";
+import { LeftOutlined } from "@ant-design/icons";
+import "./chitietthanhtoan.css";
+import axiosClient from "../../../axiosClient";
+import { useNavigate } from "react-router-dom"; 
 
 
-const UserPaymentPage = () => {
+const AdminPaymentPage = () => {
   const [paymentList, setPaymentList] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 5,
-    total: 0, // Khởi tạo tổng số bản ghi
+    total: 0,
   });
-  const [filterType, setFilterType] = useState("PENDING"); // Mặc định là "Chưa thanh toán"
+  const [filterType, setFilterType] = useState("PENDING");
   const { Panel } = Collapse;
+  const navigate = useNavigate();
 
-  // Hàm gọi API để lấy dữ liệu thanh toán
   const fetchPayments = useCallback(async (page, pageSize, filter) => {
     try {
       const params = {
-        offset: (page - 1) * pageSize, // Cập nhật offset cho chính xác
+        offset: (page - 1) * pageSize,
         limit: pageSize,
       };
 
-      // Thêm tham số `status` nếu filter là "PENDING"
       if (filter === "PENDING") {
         params.status = "PENDING";
       } else {
         delete params.status;
       }
 
-      const response = await axiosClient.get("/payments/user", { params });
+      const response = await axiosClient.get("/payments", { params });
 
-      setPaymentList(response.data); // Lấy danh sách từ `data`
+      setPaymentList(response.data);
       setPagination({
         ...pagination,
         current: page,
         pageSize: pageSize,
-        total: response.data.meta.total || 0, // Nếu meta không có `total`, dùng giá trị mặc định
+        total: response.data.meta.total || 0,
       });
     } catch (err) {
-      console.error("Lỗi khi tải dữ liệu thanh toán:", err);
+      if (err.response) {
+        const { status, data } = err.response;
+
+        if (status === 405) {
+          const detailMessage = data?.detail?.message || "Hành động không được phép.";
+          message.error(`Lỗi: ${detailMessage}`, 5);
+        } else {
+          // Xử lý các lỗi khác
+          message.error("Đã xảy ra lỗi trong quá trình tải dữ liệu.", 5);
+        }
+      }
     }
   }, [pagination]);
 
+  // Gọi API khi trang hoặc filterType thay đổi
   useEffect(() => {
+    window.scrollTo(0, 0);
     fetchPayments(pagination.current, pagination.pageSize, filterType);
-  }, [filterType, pagination, fetchPayments]); // Theo dõi toàn bộ đối tượng pagination
+  }, [filterType, pagination, fetchPayments]);  // Thêm 'pagination' vào mảng phụ thuộc
 
 
   const columns = [
@@ -98,20 +111,11 @@ const UserPaymentPage = () => {
           })()
           : "Chưa thanh toán",
     },
-
     {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button
-            className="online-payment-button"
-            onClick={() => handleConfirmPayment(record.id, record.payment_amount)}
-            disabled={record.payment_status === "COMPLETED"}
-          >
-            Thanh toán online
-          </Button>
-
           <Button type="link" onClick={() => viewDetails(record)}>
             Chi tiết
           </Button>
@@ -119,45 +123,8 @@ const UserPaymentPage = () => {
       ),
     },
   ];
-
-  const ConfirmPayment = async (id, amount) => {
-    try {
-      const response = await axiosClient.post("payments/zalopay/create-payment", {
-        payment_id: id, // ID giao dịch của bạn
-        amount: amount,  // Số tiền thanh toán
-      });
-
-      // Lấy URL từ dữ liệu trả về của backend
-      const zalopayUrl = response.zalopay_url; // URL từ ZaloPay trả về
-      localStorage.setItem('payment_id', id);
-      localStorage.setItem('payment_amount', amount);
-
-      if (zalopayUrl) {
-        // Mở URL ZaloPay trong cửa sổ mới
-        window.location.href = zalopayUrl;
-      } else {
-        console.error("Không nhận được URL ZaloPay");
-      }
-    } catch (err) {
-      console.error("Lỗi khi tạo thanh toán:", err);
-    }
-  };
-
-  const handleConfirmPayment = (id, amount) => {
-    Modal.confirm({
-      title: "Xác nhận thanh toán",
-      content: "Bạn có muốn thanh toán qua ZaloPay không?",
-      onOk: () => {
-        ConfirmPayment(id, amount);
-      },
-      onCancel: () => { },
-    });
-  };
-
   const viewDetails = (record) => {
     const imageUrl = `${process.env.REACT_APP_API_URL}/${record.patient_image}`;
-    console.log(record)
-
 
     Modal.info({
       title: `Chi tiết thanh toán`,
@@ -178,14 +145,14 @@ const UserPaymentPage = () => {
 
           {/* Phần thông tin bác sĩ và khám */}
           <div className="doctor-info">
-            <p style={{ textAlign: "left" }}><strong>Tên bác sĩ:</strong> {record.doctor_name}</p>
-            <p style={{ textAlign: "left" }}><strong>Ngày khám:</strong> {record.visit_date ? new Date(record.visit_date).toLocaleDateString('en-GB') : "N/A"}</p>
+            <p  style={{ textAlign: "left" }}><strong>Tên bác sĩ:</strong> {record.doctor_name}</p>
+            <p  style={{ textAlign: "left" }}><strong>Ngày khám:</strong> {record.visit_date ? new Date(record.visit_date).toLocaleDateString('en-GB') : "N/A"}</p>
           </div>
 
           {/* Phần thông tin thanh toán */}
-          <div className="payment-info" style={{ textAlign: "left" }}>
-            <p><strong>Số tiền:</strong> {record.payment_amount.toLocaleString()} VNĐ</p>
-            <p style={{ marginTop: "7px" }}><strong>Trạng thái: </strong>
+          <div className="payment-info">
+            <p  style={{ textAlign: "left" }}><strong>Số tiền:</strong> {record.payment_amount.toLocaleString()} VNĐ</p>
+            <p  style={{ textAlign: "left", marginTop:"10px"  }} ><strong>Trạng thái:</strong>
               <Tag
                 color={
                   record.payment_status === "COMPLETED"
@@ -202,7 +169,7 @@ const UserPaymentPage = () => {
                     : "Thanh toán lỗi"}
               </Tag>
             </p>
-            <p style={{ marginTop: "10px" }}>
+            <p  style={{ textAlign: "left", marginTop:"10px" }}>
               <strong>Thời gian thanh toán: </strong>
               {record.payment_date
                 ? (() => {
@@ -213,8 +180,6 @@ const UserPaymentPage = () => {
                 })()
                 : "Chưa thanh toán"}
             </p>
-
-
           </div>
 
           {/* Chi tiết các lần điều trị */}
@@ -260,8 +225,6 @@ const UserPaymentPage = () => {
     });
   };
 
-
-
   const handlePageChange = (page, pageSize) => {
     setPagination({
       current: page,
@@ -271,8 +234,22 @@ const UserPaymentPage = () => {
 
   return (
     <div className="payment-page" style={{ alignItems: "center" }}>
+        <Button
+          type="primary"
+          icon={<LeftOutlined />}
+          onClick={() => navigate(-1)} // Quay lại trang trước
+          style={{
+            top:"55px",
+            marginLeft: "10px",
+            backgroundColor: "#007aff",
+            borderColor: "#52c41a",
+            color: "#fff",
+          }}
+        >
+          Quay lại
+        </Button>
       <div>
-        <h1>Thanh toán bệnh nhân</h1>
+        <h1>Danh sách thanh toán</h1>
       </div>
       <Segmented
         options={[
@@ -303,4 +280,4 @@ const UserPaymentPage = () => {
   );
 };
 
-export default UserPaymentPage;
+export default AdminPaymentPage;
