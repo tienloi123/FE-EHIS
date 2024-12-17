@@ -1,21 +1,21 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Tag, Button, Space, Segmented, Pagination, Modal, Collapse, message } from "antd";
-import { LeftOutlined } from "@ant-design/icons";
-import "./chitietthanhtoan.css";
-import axiosClient from "../../../axiosClient";
-import { useNavigate } from "react-router-dom"; 
+import { Table, Button, Space, Segmented, Pagination, Modal, Collapse, message ,Input} from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import "./payment.css";
+import axiosClient from "../axiosClient";
 
 
-const AdminPaymentPage = () => {
+const DoctorPaymentPage = () => {
   const [paymentList, setPaymentList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPaymentList, setFilteredPaymentList] = useState([]); // Danh sách sau khi lọc
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 5,
     total: 0,
   });
-  const [filterType, setFilterType] = useState("PENDING");
+  const [filterType, setFilterType] = useState("ALL");
   const { Panel } = Collapse;
-  const navigate = useNavigate();
 
   const fetchPayments = useCallback(async (page, pageSize, filter) => {
     try {
@@ -33,6 +33,7 @@ const AdminPaymentPage = () => {
       const response = await axiosClient.get("/payments", { params });
 
       setPaymentList(response.data);
+      setFilteredPaymentList(response.data);  // Đặt giá trị mặc định cho danh sách lọc
       setPagination({
         ...pagination,
         current: page,
@@ -56,10 +57,17 @@ const AdminPaymentPage = () => {
 
   // Gọi API khi trang hoặc filterType thay đổi
   useEffect(() => {
-    window.scrollTo(0, 0);
     fetchPayments(pagination.current, pagination.pageSize, filterType);
-  }, [filterType, pagination, fetchPayments]);  // Thêm 'pagi nation' vào mảng phụ thuộc
-
+  }, [filterType, pagination, fetchPayments]);  // Thêm 'pagination' vào mảng phụ thuộc
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    const filteredData = paymentList.filter((record) => {
+      const matchesId = record.id.toString().includes(value);
+      const matchesName = record.patient_name.toLowerCase().includes(value.toLowerCase());
+      return matchesId || matchesName;
+    });
+    setFilteredPaymentList(filteredData);
+  };
 
   const columns = [
     {
@@ -87,36 +95,6 @@ const AdminPaymentPage = () => {
       key: "doctor_name",
     },
     {
-      title: "Số tiền (VNĐ)",
-      dataIndex: "payment_amount",
-      key: "payment_amount",
-      render: (amount) => amount.toLocaleString(),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "payment_status",
-      key: "payment_status",
-      render: (status) => (
-        <Tag color={status === "COMPLETED" ? "green" : status === "FAILED" ? "red" : "gold"}>
-          {status === "PENDING" ? "Chưa thanh toán" : status === "COMPLETED" ? "Đã thanh toán" : "Thanh toán lỗi"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Thời gian thanh toán",
-      dataIndex: "payment_date",
-      key: "payment_date",
-      render: (date) =>
-        date
-          ? (() => {
-            const d = new Date(date);
-            const time = d.toLocaleTimeString('en-GB', { hour12: false }); // Định dạng giờ, phút, giây
-            const formattedDate = d.toLocaleDateString('en-GB'); // Định dạng ngày, tháng, năm
-            return `${time}, ${formattedDate}`; // Kết hợp giờ và ngày
-          })()
-          : "Chưa thanh toán",
-    },
-    {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
@@ -132,7 +110,7 @@ const AdminPaymentPage = () => {
     const imageUrl = `${process.env.REACT_APP_API_URL}/${record.patient_image}`;
 
     Modal.info({
-      title: `Chi tiết thanh toán`,
+      title: `Chi Tiết Hồ Sơ Bệnh Án`,
       content: (
         <div className="medical-record-modal">
           {/* Phần thông tin bệnh nhân */}
@@ -153,40 +131,6 @@ const AdminPaymentPage = () => {
             <p  style={{ textAlign: "left" }}><strong>Tên bác sĩ:</strong> {record.doctor_name}</p>
             <p  style={{ textAlign: "left" }}><strong>Ngày khám:</strong> {record.visit_date ? new Date(record.visit_date).toLocaleDateString('en-GB') : "N/A"}</p>
           </div>
-
-          {/* Phần thông tin thanh toán */}
-          <div className="payment-info">
-            <p  style={{ textAlign: "left" }}><strong>Số tiền:</strong> {record.payment_amount.toLocaleString()} VNĐ</p>
-            <p  style={{ textAlign: "left", marginTop:"10px"  }} ><strong>Trạng thái:</strong>
-              <Tag
-                color={
-                  record.payment_status === "COMPLETED"
-                    ? "green"
-                    : record.payment_status === "FAILED"
-                      ? "red"
-                      : "gold"
-                }
-              >
-                {record.payment_status === "PENDING"
-                  ? "Chưa thanh toán"
-                  : record.payment_status === "COMPLETED"
-                    ? "Đã thanh toán"
-                    : "Thanh toán lỗi"}
-              </Tag>
-            </p>
-            <p  style={{ textAlign: "left", marginTop:"10px" }}>
-              <strong>Thời gian thanh toán: </strong>
-              {record.payment_date
-                ? (() => {
-                  const date = new Date(record.payment_date);
-                  const time = date.toLocaleTimeString('en-GB', { hour12: false }); // Format giờ, phút, giây
-                  const formattedDate = date.toLocaleDateString('en-GB'); // Format ngày, tháng, năm
-                  return `${time}, ${formattedDate}`;
-                })()
-                : "Chưa thanh toán"}
-            </p>
-          </div>
-
           {/* Chi tiết các lần điều trị */}
           <div className="treatment-details">
             <h4>Chi tiết các lần khám bệnh:</h4>
@@ -230,6 +174,8 @@ const AdminPaymentPage = () => {
     });
   };
 
+
+
   const handlePageChange = (page, pageSize) => {
     setPagination({
       current: page,
@@ -239,35 +185,30 @@ const AdminPaymentPage = () => {
 
   return (
     <div className="payment-page" style={{ alignItems: "center" }}>
-        <Button
-          type="primary"
-          icon={<LeftOutlined />}
-          onClick={() => navigate(-1)} // Quay lại trang trước
-          style={{
-            top:"55px",
-            marginLeft: "10px",
-            backgroundColor: "#007aff",
-            borderColor: "#52c41a",
-            color: "#fff",
-          }}
-        >
-          Quay lại
-        </Button>
       <div>
-        <h1>Danh sách thanh toán</h1>
+        <h1>Hồ sơ bệnh án</h1>
       </div>
-      <Segmented
-        options={[
-          { label: "Chưa thanh toán", value: "PENDING" },
-          { label: "Tất cả", value: "ALL" },
-        ]}
-        value={filterType}
-        onChange={(value) => setFilterType(value)}
-        style={{ marginBottom: 16 }}
-      />
+      
+      <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', marginBottom: 16}}>
+        <Segmented
+          options={[
+            { label: "", value: "ALL" },
+          ]}
+          value={filterType}
+          onChange={(value) => setFilterType(value)}
+          style={{marginTop: 0}}
+        />
+        <Input
+          placeholder="Tìm kiếm theo mã hồ sơ hoặc tên bệnh nhân"
+          prefix={<SearchOutlined />}
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+          style={{  width: "330px" }}
+        />
+      </div>
       <Table
         columns={columns}
-        dataSource={paymentList}
+        dataSource={filteredPaymentList}
         rowKey={(record) => record.id}
         pagination={false} // Tắt phân trang mặc định của bảng
       />
@@ -285,4 +226,4 @@ const AdminPaymentPage = () => {
   );
 };
 
-export default AdminPaymentPage;
+export default DoctorPaymentPage;

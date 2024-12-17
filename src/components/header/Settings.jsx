@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Button, Modal, message, Row, Col, Card, Spin } from 'antd';
+import { Input, Button, Modal, message, Row, Col, Card, Spin, Form } from 'antd';
 import axiosClient from '../../axiosClient';
-import './Settings.css'; // Đảm bảo CSS được nhập đúng
+import './Settings.css'; // Ensure CSS is properly imported
 import Info from '../../assets/icons/avatar.jpg';
 
 const Settings = () => {
@@ -9,37 +9,50 @@ const Settings = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
-  const [step, setStep] = useState(1); // Step 1: Send OTP, Step 2: Verify OTP, Step 3: Enter new password
-  const [oldPassword, setOldPassword] = useState(''); // Mật khẩu cũ
-  const [newPassword, setNewPassword] = useState(''); // Mật khẩu mới
-  const [confirmPassword, setConfirmPassword] = useState(''); // Xác nhận mật khẩu mới
+  const [step, setStep] = useState(1);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [avatar, setAvatar] = useState(Info); // Avatar mặc định
 
-  // Gửi mã OTP
+
+  // Simulating user data (since no API call is being made here for demonstration)
+  // Fetch user info
+  const fetchUserInfo = async () => {
+    setLoading(true);
+    try {
+      const response = await axiosClient.get('user/profile');
+      setUserInfo(response.data);
+      console.log(response.data.avatar_url)
+      setAvatar(response.data.avatar_url || Info);
+    } catch (error) {
+      message.error('Không thể tải thông tin người dùng');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const sendOtp = async () => {
     try {
-      // Giả sử backend gửi OTP qua email
       await axiosClient.post('/auth/send-otp');
       message.info('OTP đã được gửi đến email của bạn.');
     } catch (error) {
       message.error('Không thể gửi OTP. Vui lòng thử lại!');
-      console.error(error);
     }
   };
 
-  // Xác thực OTP
   const verifyOtp = async () => {
     try {
-      console.log(otp)
       await axiosClient.post('/auth/verify-otp', { otp });
       message.success('Xác thực OTP thành công! Hãy nhập mật khẩu mới.');
-      setStep(2); // Chuyển sang bước nhập mật khẩu mới
+      setStep(2);
     } catch (error) {
       message.error('OTP không hợp lệ hoặc đã hết hạn.');
-      console.error(error);
     }
   };
 
-  // Đổi mật khẩu
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       message.error('Mật khẩu mới và xác nhận mật khẩu không khớp.');
@@ -54,10 +67,9 @@ const Settings = () => {
       await axiosClient.post('/auth/change-password', { oldPassword, newPassword });
       message.success('Mật khẩu đã được thay đổi thành công!');
       setIsModalVisible(false);
-      resetModalState(); // Reset lại trạng thái modal
+      resetModalState();
     } catch (error) {
       message.error('Mật khẩu cũ không đúng. Vui lòng thử lại!');
-      console.error(error);
     }
   };
 
@@ -69,93 +81,202 @@ const Settings = () => {
     setConfirmPassword('');
   };
 
-  // Fetch user info
-  const fetchUserInfo = async () => {
-    setLoading(true);
-    try {
-      const response = await axiosClient.get('user/profile');
-      setUserInfo(response.data);
-    } catch (error) {
-      message.error('Không thể tải thông tin người dùng');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchUserInfo();
+    fetchUserInfo();  // Assign the simulated user info
   }, []);
 
-  // Open password modal
   const showPasswordModal = () => {
     setIsModalVisible(true);
-    sendOtp()
-
+    sendOtp();
   };
 
-  // Handle modal cancellation
   const handleCancel = () => {
     setIsModalVisible(false);
     resetModalState();
   };
+  const handleUploadAvatar = async (e) => {
+    const uploadedFile = e.target.files[0];
+    if (!uploadedFile) {
+      return;
+    }
 
+    // Validate file size and type
+    if (!['image/png', 'image/jpeg'].includes(uploadedFile.type)) {
+      message.error('File không hợp lệ. Chỉ chấp nhận PNG, JPG.');
+      return;
+    }
+
+    // Display preview
+    const imageURL = URL.createObjectURL(uploadedFile);
+    setAvatar(imageURL);
+
+    // Upload file
+    const formData = new FormData();
+    formData.append('file', uploadedFile);
+
+    try {
+      const response = await axiosClient.post('/user/upload-avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      window.location.reload();
+      message.success('Ảnh đại diện đã được cập nhật!');
+      setUserInfo((prev) => ({ ...prev, avatar: response.data.avatar }));
+    } catch (error) {
+      message.error('Có lỗi xảy ra khi tải ảnh lên. Vui lòng thử lại.');
+    }
+  };
   return (
     <div className="settings-container">
       <Row gutter={16}>
-        {/* User Profile Section */}
         <Col span={8}>
-          <div className="profile-card">
-            <Card
-              title="Thông tin cá nhân"
-              bordered
-              style={{ textAlign: 'center', backgroundColor: '#f0f2f5', borderRadius: '10px' }}
-            >
-              <div className="user-profile">
-                <img src={Info} className="avatar" alt="User Avatar" />
-                {loading ? (
-                  <Spin size="large" />
-                ) : (
-                  <>
-                    <p><strong>Họ Tên:</strong> <span style={{ marginLeft: "40px" }}>{userInfo?.name || 'Chưa có thông tin'}</span></p>
-                    <p><strong>Email:</strong> <span style={{ marginLeft: "50px" }}>{userInfo?.email || 'Chưa có thông tin'}</span></p>
-                    <p><strong>Ngày sinh:</strong> <span style={{ marginLeft: "15px" }}>{userInfo?.dob || 'Chưa có thông tin'}</span></p>
-                    <p><strong>Giới tính:</strong> <span style={{ marginLeft: "25px" }}>{userInfo?.gender || 'Chưa có thông tin'}</span></p>
-                    <p><strong>Nơi cư trú:</strong> <span style={{ marginLeft: "13px" }}>{userInfo?.residence || 'Chưa có thông tin'}</span></p>
-                    <Button
-                      type="primary"
-                      onClick={showPasswordModal}
-                      style={{
-                        marginTop: '20px',
-                        backgroundColor: '#1890ff',
-                        borderColor: '#1890ff',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        padding: '8px 20px',
-                      }}
-                    >
-                      Đổi mật khẩu
-                    </Button>
-                  </>
-                )}
-              </div>
-            </Card>
-          </div>
+          <Card
+            title="Thông tin cá nhân"
+            bordered={false}
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '15px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              textAlign: 'center',
+            }}
+          >
+            <div className="user-profile">
+              {loading ? (
+                <Spin size="large" />
+              ) : (
+                <>
+                  <div className="profile-upload" style={{ display: "flex", justifyContent: "start", width: "70%", gap: "20px" }}>
+                    <img
+                      src={avatar}
+                      className="avatar"
+                      alt="User Avatar"
+                      style={{ width: '100px', height: '100px', borderRadius: '50%' }}
+                    />
+
+                    <div>
+                      <p><strong>Ảnh đại diện</strong></p>
+                      <p style={{ fontSize: "x-small", width: "200px" }}>Loại tệp được chấp nhận .png, .jpg.</p>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        onChange={handleUploadAvatar}
+                        style={{ display: 'none' }}
+                        id="fileInput"
+                      />
+                      <Button
+                        type="primary"
+                        onClick={() => document.getElementById('fileInput').click()}
+                        style={{
+                          display: "flex",
+                          justifyContent: "start",
+                          height: "25%",
+                          marginLeft: "0px",
+                        }}
+                      >
+                        Upload
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Form
+                    style={{ marginLeft: "70px" }}
+                    layout="vertical"
+                    initialValues={{
+                      name: userInfo?.name || '',
+                      email: userInfo?.email || '',
+                      dob: userInfo?.dob || '',
+                      gender: userInfo?.gender || '',
+                      residence: userInfo?.residence || '',
+                      role: userInfo?.role || '',
+                    }}
+                  >
+
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item label="Họ Tên" name="name">
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="Email" name="email">
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item label="Ngày sinh" name="dob">
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="Giới tính" name="gender">
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item label="Nơi cư trú" name="residence">
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="Vai trò" name="role">
+                          <Input disabled />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                  </Form>
+                  <Button
+                    type="primary"
+                    onClick={showPasswordModal}
+                    style={{
+                      marginTop: '20px',
+                      backgroundColor: '#1890ff',
+                      borderColor: '#1890ff',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      padding: '10px 25px',
+                      borderRadius: '25px',
+                    }}
+                  >
+                    Đổi mật khẩu
+                  </Button>
+                </>
+              )}
+            </div>
+          </Card>
         </Col>
       </Row>
 
-      {/* Password Change Modal */}
       <Modal
         title={step === 1 ? 'Xác thực OTP' : 'Nhập mật khẩu mới'}
         open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         centered
-        styles={{ body: { backgroundColor: '#f7f7f7', padding: '20px', borderRadius: '10px' } }}
+        bodyStyle={{ backgroundColor: '#f7f7f7', borderRadius: '10px' }}
+        style={{
+          maxWidth: '500px',
+          borderRadius: '10px',
+        }}
       >
         {step === 1 && (
           <div className="otp-verification-form">
-            <Input.OTP length={6} value={otp} onChange={(value) => setOtp(value)} />
+            <Input
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              maxLength={6}
+              style={{
+                marginBottom: '10px',
+                borderRadius: '8px',
+                padding: '10px',
+              }}
+              placeholder="Nhập mã OTP"
+            />
             <Button
               type="primary"
               onClick={verifyOtp}
@@ -165,6 +286,7 @@ const Settings = () => {
                 width: '100%',
                 fontSize: '16px',
                 padding: '12px',
+                borderRadius: '8px',
               }}
               disabled={otp.length !== 6}
             >
@@ -173,30 +295,27 @@ const Settings = () => {
           </div>
         )}
         {step === 2 && (
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            handleChangePassword();
-          }}>
+          <form onSubmit={(e) => { e.preventDefault(); handleChangePassword(); }}>
             <Input.Password
               placeholder="Mật khẩu cũ"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
               autoComplete="current-password"
-              style={{ marginBottom: '10px' }}
+              style={{ marginBottom: '10px', borderRadius: '8px', padding: '10px' }}
             />
             <Input.Password
               placeholder="Mật khẩu mới"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               autoComplete="new-password"
-              style={{ marginBottom: '10px' }}
+              style={{ marginBottom: '10px', borderRadius: '8px', padding: '10px' }}
             />
             <Input.Password
               placeholder="Xác nhận mật khẩu mới"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
-              style={{ marginBottom: '10px' }}
+              style={{ marginBottom: '20px', borderRadius: '8px', padding: '10px' }}
             />
             <Button
               type="primary"
@@ -207,6 +326,7 @@ const Settings = () => {
                 width: '100%',
                 fontSize: '16px',
                 padding: '12px',
+                borderRadius: '8px',
               }}
               disabled={!oldPassword || !newPassword || !confirmPassword}
             >

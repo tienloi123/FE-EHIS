@@ -11,10 +11,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: auto; /* Chiều cao 100% của màn hình */
     background-image: url('./register1.jpg'); /* Hình nền nhẹ nhàng */
     background-size: cover;
     background-position: center;
+    min-height: 81vh;
   }
   
   /* Form đăng ký */

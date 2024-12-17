@@ -25,7 +25,6 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     width: 400px;
-    margin-left: 50px;
     backdrop-filter: blur(10px); /* Hiệu ứng mờ */
   }
   

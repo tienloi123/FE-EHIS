@@ -1,8 +1,7 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Header.css';
 import bellIcon from '../../assets/icons/bell-icon.png';
-import Avatar from '../../assets/icons/avatar.jpg';
 import Eye from '../../assets/icons/eye.png';
 import Up from '../../assets/icons/eye2.png';
 import axiosClient from './../../axiosClient';
@@ -12,7 +11,7 @@ import { toast } from 'react-toastify';
 import { Popover, Badge, Segmented, Button, Tooltip, List } from 'antd';
 import Pusher from 'pusher-js';
 import MarkAsRead from '../../assets/icons/mark-all-as-read.png';
-
+import Info from '../../assets/icons/avatar.jpg';
 
 export const Header = () => {
   const { isLoggedIn, logout, role, user, user_id } = useContext(AuthContext);
@@ -23,6 +22,10 @@ export const Header = () => {
   const [notifications, setNotifications] = useState([]); // Danh sách thông báo
   const [expandedNotification, setExpandedNotification] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false); // Khởi tạo state
+  const location = useLocation();
+  const [avatar, setAvatar] = useState(Info); // Avatar mặc định
+
+  const isActive = (path) => location.pathname === path;
 
 
   const fetchNotifications = useCallback(async () => {
@@ -99,9 +102,20 @@ export const Header = () => {
     } catch (error) {
     }
   };
+  const fetchUserInfo = async () => {
+    try {
+      const response = await axiosClient.get('user/profile');
+      console.log(response.data.avatar_url)
+      setAvatar(response.data.avatar_url || Info);
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  };
 
   useEffect(() => {
     fetchNotifications();
+    fetchUserInfo();
   }, [fetchNotifications], [isLoggedIn]);  // Thêm isLoggedIn vào dependency để khi trạng thái thay đổi, thông báo sẽ được cập nhật
 
   const requestNotificationPermission = async () => {
@@ -443,21 +457,24 @@ export const Header = () => {
           <ul className='menuLi'>
             {role === 'Patient' ? (
               <>
+                <li className={isActive("/") ? "active" : ""}></li>
                 <li><Link to="/">Trang chủ</Link></li>
                 <li
-                  className='bookingMenu'
+                  className={`bookingMenu ${isActive("/dat-lich-kham") || isActive("/lich-kham-cua-toi") ? "active" : ""}`}
                   onMouseEnter={() => setBookingMenuOpen(true)}
                   onMouseLeave={() => setBookingMenuOpen(false)}
                 >
                   <span className='textcolor'>Khám bệnh</span>
                   {bookingMenuOpen && (
                     <ul className='dropdownMenu'>
+                      <li className={isActive("/dat-lich-kham") ? "active" : ""}></li>
                       <li>
                         <Link to="/dat-lich-kham" onClick={(e) => handleProtectedLink(e, '/dat-lich-kham')}>
                           Đặt lịch khám
                         </Link>
                       </li>
-                      <li>
+                      <li className={isActive("/lich-kham-cua-toi") ? "active" : ""}>
+
                         <Link to="/xem-lich-kham" onClick={(e) => handleProtectedLink(e, '/lich-kham-cua-toi')}>
                           Xem lịch khám
                         </Link>
@@ -465,49 +482,52 @@ export const Header = () => {
                     </ul>
                   )}
                 </li>
-                <li>
+                <li className={isActive("/thanh-toan-nguoi-dung") ? "active" : ""}>
                   <Link to="/thanh-toan-nguoi-dung" onClick={(e) => handleProtectedLink(e, '/ho-so-benh-an')}>
                     Thanh toán
                   </Link>
                 </li>
 
-                <li>
+                <li className={isActive("/tin-tuc") ? "active" : ""}>
                   <Link to="/tin-tuc">Tin tức</Link>
                 </li>
               </>
             ) : role === 'Receptionist' ? (
               <>
-                <li><Link to="/">Trang chủ</Link></li>
+                <li className={isActive("/") ? "active" : ""}><Link to="/">Trang chủ</Link></li>
                 <li
                   className='bookingMenu'
                 >
-                  <li>
+                  <li className={isActive("/lich-hen-benh-nhan") ? "active" : ""}>
                     <Link to="/lich-hen-benh-nhan">Lịch hẹn bệnh nhân</Link>
                   </li>
                 </li>
-                <li>
+                <li className={isActive("/thanh-toan") ? "active" : ""}>
                   <Link to="/thanh-toan">Thanh toán</Link>
                 </li>
               </>
             ) : role === 'Doctor' && (
               <>
-                <li><Link to="/">Trang chủ</Link></li>
-                <li>
+                <li className={isActive("/") ? "active" : ""}><Link to="/">Trang chủ</Link></li>
+                <li className={isActive("/lich-hen-bac-si") ? "active" : ""}>
                   <Link to="/lich-hen-bac-si">Xem lịch hẹn</Link>
+                </li>
+                <li className={isActive("/thanh-toan-bac-si") ? "active" : ""}>
+                  <Link to="/thanh-toan-bac-si">Hồ sơ bệnh án</Link>
                 </li>
               </>
             )}
             {role === 'Superuser' && (
               <>
                 <li
-                  className="managementMenu"
+                  className={`managementMenu ${isActive("/quan-ly-benh-nhan") || isActive("/quan-ly-bac-si") || isActive("/quan-ly-le-tan") ? "active" : ""}`}
                   style={{
                     position: 'relative',
                     display: 'inline-block',
                     cursor: 'pointer',
                     padding: '10px',
-                    bottom:'10px',
-                    left: '20px'
+                    bottom: '10px',
+                    left: '20px',
                   }}
                   onMouseEnter={() => setDropdownOpen(true)}
                   onMouseLeave={() => setDropdownOpen(false)}
@@ -537,6 +557,7 @@ export const Header = () => {
                       }}
                     >
                       <li
+                        className={isActive("/quan-ly-benh-nhan") ? "active" : ""}
                         style={{
                           padding: '8px 15px',
                           borderBottom: '1px solid #ddd',
@@ -546,7 +567,6 @@ export const Header = () => {
                           to="/quan-ly-benh-nhan"
                           style={{
                             textDecoration: 'none',
-                            color: '#333',
                             display: 'block',
                           }}
                         >
@@ -554,6 +574,7 @@ export const Header = () => {
                         </Link>
                       </li>
                       <li
+                        className={isActive("/quan-ly-bac-si") ? "active" : ""}
                         style={{
                           padding: '8px 15px',
                           borderBottom: '1px solid #ddd',
@@ -563,7 +584,6 @@ export const Header = () => {
                           to="/quan-ly-bac-si"
                           style={{
                             textDecoration: 'none',
-                            color: '#333',
                             display: 'block',
                           }}
                         >
@@ -571,6 +591,7 @@ export const Header = () => {
                         </Link>
                       </li>
                       <li
+                        className={isActive("/quan-ly-le-tan") ? "active" : ""}
                         style={{
                           padding: '8px 15px',
                         }}
@@ -579,7 +600,6 @@ export const Header = () => {
                           to="/quan-ly-le-tan"
                           style={{
                             textDecoration: 'none',
-                            color: '#333',
                             display: 'block',
                           }}
                         >
@@ -589,26 +609,24 @@ export const Header = () => {
                     </ul>
                   )}
                 </li>
-                <li>
+                <li className={isActive("/bao-cao-thong-ke") ? "active" : ""}>
                   <Link
                     to="/bao-cao-thong-ke"
                     style={{
                       textDecoration: 'none',
                       padding: '10px',
-                      color: '#333',
                       display: 'inline-block',
                     }}
                   >
                     Báo cáo thống kê
                   </Link>
                 </li>
-                <li>
+                <li className={isActive("/quan-ly-thanh-toan") ? "active" : ""}>
                   <Link
                     to="/quan-ly-thanh-toan"
                     style={{
                       textDecoration: 'none',
                       padding: '10px',
-                      color: '#333',
                       display: 'inline-block',
                     }}
                   >
@@ -657,7 +675,12 @@ export const Header = () => {
             <div className='user_name'>Xin chào, {user}!</div>
             <div className='avatarContainer' onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)}>
               <div className='avatarWrapper'>
-                <img src={Avatar} className='avatar' alt='' />
+                <img
+                      src={avatar}
+                      className="avatar"
+                      alt="User Avatar"
+                      style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                    />
                 {menuOpen && (
                   <div className='dropdownMenu'>
                     <Link to="/settings">Cài đặt</Link>

@@ -19,6 +19,7 @@ import PatientManagement from './pages/superuser/quan-ly-benh-nhan/quanlybenhnha
 import ReportPage from './pages/superuser/bao-cao-thong-ke/baocaothongke';
 import AdminPaymentPage from './pages/superuser/bao-cao-thong-ke/chitietthanhtoan';
 import AdminGetAppointment from './pages/superuser/bao-cao-thong-ke/chitietlichhen';
+import DoctorPaymentPage from './pages/doctor_payment';
 
 export const mainRouters = [
   {
@@ -64,6 +65,11 @@ export const mainRouters = [
   {
     path: '/thanh-toan',
     component: PaymentPage,
+    layout: MainLayout,
+  },
+  {
+    path: '/thanh-toan-bac-si',
+    component: DoctorPaymentPage,
     layout: MainLayout,
   },
   {

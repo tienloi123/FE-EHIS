@@ -37,7 +37,7 @@ h2 {
 .user-profile p {
   display: flex;
   justify-content: start;
-  width: 100%;
+  width: 60%;
   margin: 5px 0;
   font-size: 16px;
   color: #333;
@@ -126,20 +126,3 @@ h2 {
   font-size: 30px;
   color: #1890ff;
 }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .settings-container {
-    width: 95%;
-  }
-
-  .user-profile p {
-    font-size: 14px;
-  }
-
-  .ant-card {
-    width: 800px;
-    margin-top: 20px;
-  }
-}
-

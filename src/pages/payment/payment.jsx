@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Tag, Button, Space, Segmented, Pagination, Modal, Collapse, message } from "antd";
+import { Table, Tag, Button, Space, Segmented, Pagination, Modal, Collapse, message, Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import "./payment.css";
 import axiosClient from "../../axiosClient";
 import { toast } from 'react-toastify';
@@ -7,6 +8,8 @@ import { toast } from 'react-toastify';
 
 const PaymentPage = () => {
   const [paymentList, setPaymentList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPaymentList, setFilteredPaymentList] = useState([]); // Danh sách sau khi lọc
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 5,
@@ -31,6 +34,7 @@ const PaymentPage = () => {
       const response = await axiosClient.get("/payments", { params });
 
       setPaymentList(response.data);
+      setFilteredPaymentList(response.data);  // Đặt giá trị mặc định cho danh sách lọc
       setPagination({
         ...pagination,
         current: page,
@@ -57,8 +61,22 @@ const PaymentPage = () => {
     fetchPayments(pagination.current, pagination.pageSize, filterType);
   }, [filterType, pagination, fetchPayments]);  // Thêm 'pagination' vào mảng phụ thuộc
 
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    const filteredData = paymentList.filter((record) => {
+      const matchesId = record.id.toString().includes(value);
+      const matchesName = record.patient_name.toLowerCase().includes(value.toLowerCase());
+      return matchesId || matchesName;
+    });
+    setFilteredPaymentList(filteredData);
+  };
 
   const columns = [
+    {
+      title: "Mã hồ sơ",
+      dataIndex: "id",
+      key: "id",
+    },
     {
       title: "Tên bệnh nhân",
       dataIndex: "patient_name",
@@ -269,18 +287,28 @@ const PaymentPage = () => {
       <div>
         <h1>Danh sách thanh toán</h1>
       </div>
-      <Segmented
-        options={[
-          { label: "Chưa thanh toán", value: "PENDING" },
-          { label: "Tất cả", value: "ALL" },
-        ]}
-        value={filterType}
-        onChange={(value) => setFilterType(value)}
-        style={{ marginBottom: 16 }}
-      />
+      
+      <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', marginBottom: 16}}>
+        <Segmented
+          options={[
+            { label: "Chưa thanh toán", value: "PENDING" },
+            { label: "Tất cả", value: "ALL" },
+          ]}
+          value={filterType}
+          onChange={(value) => setFilterType(value)}
+          style={{marginTop: 0}}
+        />
+        <Input
+          placeholder="Tìm kiếm theo mã hồ sơ hoặc tên bệnh nhân"
+          prefix={<SearchOutlined />}
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+          style={{  width: "330px" }}
+        />
+      </div>
       <Table
         columns={columns}
-        dataSource={paymentList}
+        dataSource={filteredPaymentList}
         rowKey={(record) => record.id}
         pagination={false} // Tắt phân trang mặc định của bảng
       />

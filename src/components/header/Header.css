@@ -479,3 +479,8 @@
   margin-top: 40px;
   margin-bottom: -2px !important;
 }
+.menuLi .active > a,
+.dropdownMenu .active > a {
+  font-weight: bold;
+  color: #1890ff; /* Màu xanh để làm nổi bật */
+}
