@@ -107,35 +107,6 @@ video {
   color: #ffffff;
   background: rgb(251, 44, 123);
 }
-
-/* Back to Top Button */
-.scroll-to-top {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.scroll-button {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px 20px;
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s ease;
-}
-
-.scroll-button:hover {
-  background-color: #0b7dda;
-}
-
 .imageFooter {
   padding-top: 20px;
   width: 100%;

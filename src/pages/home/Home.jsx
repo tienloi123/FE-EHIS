@@ -1,31 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {} from 'react';
 import './Home.css';
 import './../all.css';
 import SliderHome from '../../components/home/SliderHome';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const Home = () => {
-  const [scrollTopVisible, setScrollTopVisible] = useState(false);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setScrollTopVisible(true);
-      } else {
-        setScrollTopVisible(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   return (
     <div className='home-container'>
@@ -65,14 +44,6 @@ const Home = () => {
           <img src="./images/BFTET.png" alt="" className='imageFooter'/>
         </div>
       </section>
-
-      {scrollTopVisible && (
-        <div className='scroll-to-top' style={{alignItems:"center"}}>
-          <button onClick={scrollToTop} className='scroll-button'>
-            <i className="fas fa-chevron-up"></i>
-          </button>
-        </div>
-      )}
     </div>
   );
 };

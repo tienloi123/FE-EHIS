@@ -49,7 +49,20 @@ export const Header = () => {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]); // Đưa fetchNotifications vào mảng phụ thuộc
-
+  useEffect(() => {
+    let script;
+  
+    if (role === 'Patient') {
+      // Tạo và thêm script
+      script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://embed.tawk.to/67611e6e49e2fd8dfef94e08/1if9ltol1';
+      script.charset = 'UTF-8';
+      script.setAttribute('crossorigin', '*');
+      script.id = 'tawk-script'; // Gán id để dễ dàng xóa
+      document.body.appendChild(script);
+    };
+  }, [role]); // Chạy lại khi role thay đổi
   const handleSegmentChange = async (value) => {
     if (value === 'Tất cả') {
       try {
@@ -284,6 +297,7 @@ export const Header = () => {
       });
       logout();
       navigate('/login');
+      window.location.reload()
     } catch (error) {
     }
   };

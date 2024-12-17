@@ -46,14 +46,26 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('user_id');
+    // Xóa toàn bộ LocalStorage
+    localStorage.clear();
+  
+    // Xóa toàn bộ SessionStorage
+    sessionStorage.clear();
+  
+    // Xóa tất cả cookies
+    document.cookie.split(';').forEach((cookie) => {
+      const [name] = cookie.split('=');
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    });
+  
+    // Reset state và các biến khác
     setUser('');
     setRole('');
     setId('');
     setIsLoggedIn(false);
+  
   };
+  
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, login, logout, user, role, user_id}}>
