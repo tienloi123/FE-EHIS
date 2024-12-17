@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Input, Button, Modal, message, Row, Col, Card, Spin, Form } from 'antd';
 import axiosClient from '../../axiosClient';
 import './Settings.css'; // Ensure CSS is properly imported
 import Info from '../../assets/icons/avatar.jpg';
+import { AuthContext } from '../../context/AuthContext';
 
 const Settings = () => {
+  const {setKeyReload} = useContext(AuthContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -118,8 +120,8 @@ const Settings = () => {
       const response = await axiosClient.post('/user/upload-avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      window.location.reload();
       message.success('Ảnh đại diện đã được cập nhật!');
+      setKeyReload(prev => prev + 1)
       setUserInfo((prev) => ({ ...prev, avatar: response.data.avatar }));
     } catch (error) {
       message.error('Có lỗi xảy ra khi tải ảnh lên. Vui lòng thử lại.');

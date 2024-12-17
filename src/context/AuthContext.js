@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState('');
   const [role, setRole] = useState(''); // Thêm role vào state
   const [user_id, setId] = useState('');
+  const [keyReload, setKeyReload] = useState(0)
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -68,7 +69,7 @@ export const AuthProvider = ({ children }) => {
   
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, user, role, user_id}}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, user, role, user_id, setKeyReload, keyReload}}>
       {children}
     </AuthContext.Provider>
   );

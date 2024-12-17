@@ -14,7 +14,7 @@ import MarkAsRead from '../../assets/icons/mark-all-as-read.png';
 import Info from '../../assets/icons/avatar.jpg';
 
 export const Header = () => {
-  const { isLoggedIn, logout, role, user, user_id } = useContext(AuthContext);
+  const { isLoggedIn, logout, role, user, user_id, keyReload } = useContext(AuthContext);
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingMenuOpen, setBookingMenuOpen] = useState(false);
@@ -26,7 +26,7 @@ export const Header = () => {
   const [avatar, setAvatar] = useState(Info); // Avatar mặc định
 
   const isActive = (path) => location.pathname === path;
-
+  
 
   const fetchNotifications = useCallback(async () => {
     if (!isLoggedIn) {
@@ -129,7 +129,7 @@ export const Header = () => {
   useEffect(() => {
     fetchNotifications();
     fetchUserInfo();
-  }, [fetchNotifications], [isLoggedIn]);  // Thêm isLoggedIn vào dependency để khi trạng thái thay đổi, thông báo sẽ được cập nhật
+  }, [fetchNotifications, isLoggedIn, keyReload]);  // Thêm isLoggedIn vào dependency để khi trạng thái thay đổi, thông báo sẽ được cập nhật
 
   const requestNotificationPermission = async () => {
     if (Notification.permission === 'default') {
