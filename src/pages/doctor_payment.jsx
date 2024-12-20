@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Table, Button, Space, Segmented, Pagination, Modal, Collapse, message ,Input} from "antd";
+import { Table, Button, Space, Pagination, Modal, Collapse, message ,Input} from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import "./payment.css";
 import axiosClient from "../axiosClient";
@@ -14,7 +14,7 @@ const DoctorPaymentPage = () => {
     pageSize: 5,
     total: 0,
   });
-  const [filterType, setFilterType] = useState("ALL");
+  const [filterType] = useState("ALL");
   const { Panel } = Collapse;
 
   const fetchPayments = useCallback(async (page, pageSize, filter) => {
@@ -107,7 +107,7 @@ const DoctorPaymentPage = () => {
     },
   ];
   const viewDetails = (record) => {
-    const imageUrl = `${process.env.REACT_APP_API_URL}/${record.patient_image}`;
+    const imageUrl = `${record.patient_image}`;
 
     Modal.info({
       title: `Chi Tiết Hồ Sơ Bệnh Án`,
@@ -189,15 +189,7 @@ const DoctorPaymentPage = () => {
         <h1>Hồ sơ bệnh án</h1>
       </div>
       
-      <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', marginBottom: 16}}>
-        <Segmented
-          options={[
-            { label: "", value: "ALL" },
-          ]}
-          value={filterType}
-          onChange={(value) => setFilterType(value)}
-          style={{marginTop: 0}}
-        />
+      <div style={{display: 'flex', justifyContent:'flex-end', alignItems: 'center', marginBottom: 16}}>
         <Input
           placeholder="Tìm kiếm theo mã hồ sơ hoặc tên bệnh nhân"
           prefix={<SearchOutlined />}

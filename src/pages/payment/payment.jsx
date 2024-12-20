@@ -172,7 +172,7 @@ const PaymentPage = () => {
     });
   };
   const viewDetails = (record) => {
-    const imageUrl = `${process.env.REACT_APP_API_URL}/${record.patient_image}`;
+    const imageUrl = `${record.patient_image}`;
 
     Modal.info({
       title: `Chi tiết thanh toán`,

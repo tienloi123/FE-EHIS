@@ -398,16 +398,6 @@
   /* Xóa bỏ bóng chữ khi hover */
 }
 
-.ant-btn {
-  margin-left: -10px;
-  margin-top: 5px;
-  margin-bottom: 2px;
-  background: none;
-  /* Tắt hiệu ứng nền */
-  border: none;
-  /* Tắt hiệu ứng viền */
-}
-
 /* Styling the Popover title */
 .popover-title {
   font-size: 20px;

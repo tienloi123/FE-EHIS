@@ -155,7 +155,7 @@ const UserPaymentPage = () => {
   };
 
   const viewDetails = (record) => {
-    const imageUrl = `${process.env.REACT_APP_API_URL}/${record.patient_image}`;
+    const imageUrl = `${record.patient_image}`;
     console.log(record)
 
 
