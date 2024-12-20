@@ -30,7 +30,7 @@ const Home = () => {
           <h2>Giới thiệu về hệ thống</h2>
           <div className='video-container'>
             <video autoPlay muted loop>
-              <source src="./videos/intro.mp4" type="video/mp4" />
+              <source src="https://ehis.minio.api.codelearnit.io.vn/ehis-minio-bucket/images_medical/intro.mp4" type="video/mp4" />
               Trình duyệt của bạn không hỗ trợ thẻ video.
             </video>
           </div>
