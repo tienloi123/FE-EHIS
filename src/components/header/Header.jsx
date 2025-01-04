@@ -501,10 +501,6 @@ export const Header = () => {
                     Thanh toán
                   </Link>
                 </li>
-
-                <li className={isActive("/tin-tuc") ? "active" : ""}>
-                  <Link to="/tin-tuc">Tin tức</Link>
-                </li>
               </>
             ) : role === 'Receptionist' ? (
               <>
@@ -633,18 +629,6 @@ export const Header = () => {
                     }}
                   >
                     Báo cáo thống kê
-                  </Link>
-                </li>
-                <li className={isActive("/quan-ly-thanh-toan") ? "active" : ""}>
-                  <Link
-                    to="/quan-ly-thanh-toan"
-                    style={{
-                      textDecoration: 'none',
-                      padding: '10px',
-                      display: 'inline-block',
-                    }}
-                  >
-                    Quản lý thanh toán
                   </Link>
                 </li>
               </>

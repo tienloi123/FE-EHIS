@@ -20,6 +20,8 @@ import ReportPage from './pages/superuser/bao-cao-thong-ke/baocaothongke';
 import AdminPaymentPage from './pages/superuser/bao-cao-thong-ke/chitietthanhtoan';
 import AdminGetAppointment from './pages/superuser/bao-cao-thong-ke/chitietlichhen';
 import DoctorPaymentPage from './pages/doctor_payment';
+import DoctorManagement from './pages/superuser/quan-ly-bac-si/quanlybacsi';
+import ReceptionistManagement from './pages/superuser/quan-ly-le-tan/quanlyletan';
 
 export const mainRouters = [
   {
@@ -90,6 +92,16 @@ export const mainRouters = [
   {
     path: '/quan-ly-benh-nhan',  // Route trang thanh toán thành công
     component: PatientManagement,
+    layout: MainLayout,
+  },
+  {
+    path: '/quan-ly-bac-si',  // Route trang thanh toán thành công
+    component: DoctorManagement,
+    layout: MainLayout,
+  },
+  {
+    path: '/quan-ly-le-tan',  // Route trang thanh toán thành công
+    component: ReceptionistManagement,
     layout: MainLayout,
   },
   {

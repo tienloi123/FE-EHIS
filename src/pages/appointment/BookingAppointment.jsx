@@ -3,7 +3,7 @@ import './BookingAppointment.css';
 import { toast } from 'react-toastify';
 import axiosClient from '../../axiosClient';
 import { useNavigate } from 'react-router-dom';
-
+import { Input, Button } from 'antd';
 const BookingAppointment = () => {
   const [description, setSymptoms] = useState('');
   const [appointmentDate, setAppointmentDate] = useState('');
@@ -11,6 +11,10 @@ const BookingAppointment = () => {
   const navigate = useNavigate();
   const startTime = `${appointmentTime}:00 ${appointmentDate.split('-').reverse().join('/')}`;
 
+  // Lấy ngày hiện tại (theo định dạng yyyy-mm-dd)
+  const today = new Date();
+  today.setHours(today.getHours() + 7); // Thêm 7 giờ để phù hợp với múi giờ +7
+  const todayString = today.toISOString().split('T')[0];
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -60,12 +64,13 @@ const BookingAppointment = () => {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="symptoms">Triệu chứng bệnh</label>
-          <input
-            type="text"
+          <Input.TextArea
+          style={{resize: "none",height: "120px"}}
             id="description"
             value={description}
             onChange={(e) => setSymptoms(e.target.value)}
             placeholder="Nhập triệu chứng bệnh"
+            rows={4} // Đặt chiều cao cho TextArea
             required
           />
         </div>
@@ -77,6 +82,7 @@ const BookingAppointment = () => {
             id="appointmentDate"
             value={appointmentDate}
             onChange={(e) => setAppointmentDate(e.target.value)}
+            min={todayString} // Chỉ cho phép chọn ngày từ hôm nay trở đi
             required
           />
         </div>
